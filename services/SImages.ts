@@ -1,17 +1,14 @@
-import Model from "../models"
-import { ImagesBulkAttributes } from "../interfaces/IImages"
+import Model from '../models';
+import { ImagesBulkAttributes } from '../interfaces/IImages';
 
 class ImagesService {
   async bulkCreate(payload: any) {
-    
     const images = await Model.Images.bulkCreate(payload, {});
 
     return images;
   }
 
-  async sendImage () {
-
-  }
+  async sendImage() {}
 }
 
-export default ImagesService
+export default ImagesService;

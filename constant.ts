@@ -8,31 +8,31 @@ export const ROOMS = 21;
 export const CONTENTS_CODE: {
   [prop: string]: any;
 } = {
-  'restarunt': RESTAURANT,
-  'exposure_menu': EXPOSURE_MENU,
-  'entire_menu': ENTIRE_MENU,
-  'accommodation': ACCOMMODATION,
-  'rooms': ROOMS
-}
+  restarunt: RESTAURANT,
+  exposure_menu: EXPOSURE_MENU,
+  entire_menu: ENTIRE_MENU,
+  accommodation: ACCOMMODATION,
+  rooms: ROOMS,
+};
 
 export const MODEL_STRING: {
   [props: string]: any;
 } = {
-  'restaurant': "Restaurant",
-  'exposure_menu': "ExposureMenu",
-  'entire_menu': "EntireMenu",
-  'accommodation': "Accommodation",
-  'rooms': "Rooms"
-}
+  restaurant: 'Restaurant',
+  exposure_menu: 'ExposureMenu',
+  entire_menu: 'EntireMenu',
+  accommodation: 'Accommodation',
+  rooms: 'Rooms',
+};
 
-export const UPLOAD_PATH:{
+export const UPLOAD_PATH: {
   [prop: number]: any;
 } = {
   [RESTAURANT]: '/restaurant/',
   [EXPOSURE_MENU]: '/exposure_menu/',
   [ACCOMMODATION]: '/accommodation/',
   [ROOMS]: '/rooms/',
-}
+};
 
 export const CATEGORY_LIST: {
   [prop: number]: any;
@@ -42,7 +42,7 @@ export const CATEGORY_LIST: {
   [ENTIRE_MENU]: 'EntireMenu',
   [ACCOMMODATION]: 'Accomodation',
   [ROOMS]: 'Rooms',
-}
+};
 
 export const IMAGES_ID_LIST: {
   [prop: number]: any;
@@ -51,4 +51,4 @@ export const IMAGES_ID_LIST: {
   [EXPOSURE_MENU]: 'exposure_menu_id',
   [ACCOMMODATION]: 'accommodation_id',
   [ROOMS]: 'rooms_id',
-}
+};

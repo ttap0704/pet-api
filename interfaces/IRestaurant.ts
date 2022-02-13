@@ -45,7 +45,7 @@ export interface AddRestaurantAttributes {
       comment: string;
       seq: string;
     }[];
-  }
+  };
 }
 
 export interface GetManagerRestaurantListAttributes {
@@ -60,7 +60,7 @@ export interface AddManagerRestaurantMenuListAttributes {
     label?: string;
     price?: number;
     comment?: string;
-  }
+  };
 }
 
 export interface AddManagerRestaurantCategoryMenuListAttributes {

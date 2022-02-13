@@ -9,7 +9,7 @@ export interface UsersAttributes {
   profile_path: string;
   // license_id: number;
   type: number;
-};
+}
 
 export interface CreateUserAttributes {
   login_id: string;
@@ -29,7 +29,7 @@ export interface loginUserAttributes {
 export interface resLoginUserAttributes {
   nickname?: string;
   login_id?: string;
-  uid?: number,
+  uid?: number;
   profile_path?: string;
   message: string;
   pass: boolean;

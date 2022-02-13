@@ -1,13 +1,12 @@
-import * as express from "express";
-import { Model as ModelType, Sequelize } from "sequelize/types";
-import { Logger } from "../logger/logger";
-import Model from '../models'
+import * as express from 'express';
+import { Model as ModelType, Sequelize } from 'sequelize/types';
+import { Logger } from '../logger/logger';
+import Model from '../models';
 
 class Default {
-
   public express: express.Application;
   public logger: Logger;
-  public model: ModelType
+  public model: ModelType;
 
   // array to hold users
   public data: object;
@@ -22,13 +21,9 @@ class Default {
   }
 
   // Configure Express middleware.
-  private middleware(): void {
-  }
+  private middleware(): void {}
 
-  private routes(): void {
-    
-  }
+  private routes(): void {}
 }
 
 export default Default;
-

@@ -1,6 +1,6 @@
-import * as express from "express";
-import { Logger } from "./logger/logger";
-import Routes from "./routes/_routes";
+import * as express from 'express';
+import { Logger } from './logger/logger';
+import Routes from './routes/_routes';
 
 const path = require('path');
 const session = require('express-session');
@@ -15,7 +15,6 @@ const sessionOption = {
     secure: false,
   },
 };
-
 
 class App {
   public express: express.Application;
@@ -35,26 +34,27 @@ class App {
   // Configure Express middleware.
   private middleware(): void {
     this.express.use(express.json({ limit: '50mb' }));
-    this.express.use(express.urlencoded({
-      limit: '50mb',
-      extended: false
-    }))
-    this.express.use(express.static(path.join(__dirname, "../out/")));
+    this.express.use(
+      express.urlencoded({
+        limit: '50mb',
+        extended: false,
+      }),
+    );
+    this.express.use(express.static(path.join(__dirname, '../out/')));
     this.express.use(cookieParser(process.env.COOKIE_SECRET));
     this.express.use(session(sessionOption));
   }
 
   private routes(): void {
-
-    this.express.get("/", (req: any, res: any, next) => {
-      res.sendFile(path.join(__dirname, "../out/"));
+    this.express.get('/', (req: any, res: any, next) => {
+      res.sendFile(path.join(__dirname, '../out/'));
     });
     // user route
-    this.express.use("/api", Routes);
+    this.express.use('/api', Routes);
 
     // handle undefined routes
-    this.express.use("*", (req, res, next) => {
-      res.send("Make sure url is correct!!!");
+    this.express.use('*', (req, res, next) => {
+      res.send('Make sure url is correct!!!');
     });
   }
 }

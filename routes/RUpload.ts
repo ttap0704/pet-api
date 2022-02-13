@@ -1,15 +1,14 @@
-import * as express from "express";
-import { Logger } from "../logger/logger";
+import * as express from 'express';
+import { Logger } from '../logger/logger';
 
-import Model from '../models'
-import UploadService from "../services/SUpload"
+import Model from '../models';
+import UploadService from '../services/SUpload';
 
 const path = require('path');
 const fs = require('fs');
-const formidableMiddleware = require("express-formidable");
+const formidableMiddleware = require('express-formidable');
 
 class Upload {
-
   public express: express.Application;
   public logger: Logger;
 
@@ -28,30 +27,29 @@ class Upload {
 
   // Configure Express middleware.
   private middleware(): void {
-    this.express.use(formidableMiddleware())
+    this.express.use(formidableMiddleware());
   }
 
   private routes(): void {
-    this.express.post("/image", this.uploadImages)
+    this.express.post('/image', this.uploadImages);
   }
 
   private uploadImages = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      this.logger.info("url:::::::" + req.url);
+      this.logger.info('url:::::::' + req.url);
       const length = Number(req.fields.length);
-      const category: number = Number(req.fields.category);
+      const category = Number(req.fields.category);
       const data = { length, category, files: req.files };
       const uploaded_images = await this.UploadService.uploadImages(data);
 
-      console.log(uploaded_images)
+      console.log(uploaded_images);
 
-      res.status(200).send(uploaded_images)
+      res.status(200).send(uploaded_images);
     } catch (err) {
-      res.status(500).send()
+      res.status(500).send();
       throw new Error(err);
     }
-
-  }
+  };
 }
 
 export default new Upload().express;

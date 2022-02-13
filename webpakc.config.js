@@ -13,10 +13,10 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js' ],
+    extensions: ['.ts', '.js'],
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'api.bundle.js'
-  }
+    filename: 'api.bundle.js',
+  },
 };

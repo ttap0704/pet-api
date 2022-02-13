@@ -1,4 +1,4 @@
-export { };
+export {};
 
 declare global {
   namespace Express {
@@ -10,6 +10,6 @@ declare global {
 
 declare module 'express-session' {
   interface SessionData {
-    uid?: number
+    uid?: number;
   }
 }

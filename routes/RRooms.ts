@@ -1,9 +1,8 @@
-import * as express from "express";
-import { Logger } from "../logger/logger";
-import Model from '../models'
+import * as express from 'express';
+import { Logger } from '../logger/logger';
+import Model from '../models';
 
 class Rooms {
-
   public express: express.Application;
   public logger: Logger;
 
@@ -19,13 +18,9 @@ class Rooms {
   }
 
   // Configure Express middleware.
-  private middleware(): void {
-  }
+  private middleware(): void {}
 
-  private routes(): void {
-    
-  }
+  private routes(): void {}
 }
 
 export default new Rooms().express;
-

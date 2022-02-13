@@ -1,9 +1,8 @@
-import * as express from "express";
-import { Logger } from "../logger/logger";
-import Model from '../models'
+import * as express from 'express';
+import { Logger } from '../logger/logger';
+import Model from '../models';
 
 class EntireMenuCategory {
-
   public express: express.Application;
   public logger: Logger;
 
@@ -19,18 +18,17 @@ class EntireMenuCategory {
   }
 
   // Configure Express middleware.
-  private middleware(): void {
-  }
+  private middleware(): void {}
 
   private routes(): void {
-    this.express.post("", addCategory);
+    this.express.post('', addCategory);
 
-    async function addCategory (req: express.Request, res: express.Response, next: express.NextFunction) {
+    async function addCategory(req: express.Request, res: express.Response, next: express.NextFunction) {
       const req_category = req.body.category;
 
       const category = await Model.EntireMenuCategory.findOrCreate({
         where: {
-          category: req_category
+          category: req_category,
         },
       });
 
@@ -40,4 +38,3 @@ class EntireMenuCategory {
 }
 
 export default new EntireMenuCategory().express;
-

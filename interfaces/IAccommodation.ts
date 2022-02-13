@@ -19,7 +19,7 @@ export interface AddAccommodationAttributes {
       additional_info: number;
       seq: number;
     }[];
-  }
+  };
 }
 
 export interface AddRoomAttributes {
@@ -31,5 +31,5 @@ export interface AddRoomAttributes {
     standard_num: number;
     amenities: string;
     additional_info: number;
-  }
+  };
 }
