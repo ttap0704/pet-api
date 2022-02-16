@@ -2,6 +2,7 @@ import * as express from 'express';
 import { Logger } from './logger/logger';
 import Routes from './routes/_routes';
 
+const cors = require('cors');
 const path = require('path');
 const session = require('express-session');
 const dotenv = require('dotenv');
@@ -40,6 +41,7 @@ class App {
         extended: false,
       }),
     );
+    this.express.use(cors())
     this.express.use(express.static(path.join(__dirname, '../out/')));
     this.express.use(cookieParser(process.env.COOKIE_SECRET));
     this.express.use(session(sessionOption));
@@ -50,7 +52,7 @@ class App {
       res.sendFile(path.join(__dirname, '../out/'));
     });
     // user route
-    this.express.use('/api', Routes);
+    this.express.use('/', Routes);
 
     // handle undefined routes
     this.express.use('*', (req, res, next) => {
