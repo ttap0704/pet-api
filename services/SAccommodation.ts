@@ -9,6 +9,7 @@ class AccommodationService {
           model: Model.Images,
           as: 'accommodation_images',
           require: true,
+          attributes: ['file_name'],
         },
       ],
       attributes: ['sigungu', 'bname', 'label', 'id'],
