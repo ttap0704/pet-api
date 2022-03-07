@@ -103,8 +103,6 @@ class AccommodationService {
         'price',
         'standard_num',
         'accommodation_id',
-        'amenities',
-        'additional_info',
         'seq',
       ],
     });
@@ -162,10 +160,18 @@ class AccommodationService {
       limit: 1,
     });
 
-    const seq = Number(tmp_category[0].dataValues.seq) + 1;
+    let seq = Number(tmp_category[0].dataValues.seq) + 1;
+    const bulk_data = []
+    for (const list of data) {
+      bulk_data.push({
+        ...list,
+        seq: seq
+      })
+      seq++;
+    }
 
-    const rooms = await Model.Rooms.create(
-      { ...data, seq: seq },
+    const rooms = await Model.Rooms.bulkCreate(
+      bulk_data,
       {
         fields: [
           'label',

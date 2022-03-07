@@ -62,7 +62,7 @@ class User {
         login_id: data.id,
         password: data.password,
         name: data.name,
-        phone: data.phone,
+        phone: '01043759006',
         nickname: data.nickname,
         profile_path: 'super_profile.jpeg',
         type: 0,
