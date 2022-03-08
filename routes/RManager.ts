@@ -206,8 +206,10 @@ class Manager {
     next: express.NextFunction,
   ) => {
     try {
-      const data = req.body.data;
-      const f_res = await this.AccommodationService.editManagerAccommodationRoomListOrder(data);
+      const manager = Number(req.params.manager);
+      const accommodation_id = Number(req.params.id);
+      const data = req.body;
+      const f_res = await this.AccommodationService.editManagerAccommodationRoomListOrder({ manager, accommodation_id, data });
 
       res.status(200).send(f_res);
     } catch (err) {

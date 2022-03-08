@@ -142,7 +142,10 @@ class AccommodationService {
       ],
       offset: offset,
       limit: 5,
-      order: [[{ model: Model.Images, as: 'accommodation_images' }, 'seq', 'ASC']],
+      order: [
+        [{ model: Model.Images, as: 'accommodation_images' }, 'seq', 'ASC'],
+        [{ model: Model.Rooms, as: 'accommodation_rooms' }, 'seq', 'ASC']
+      ],
     });
 
     return { count: count, rows: list };
@@ -345,12 +348,14 @@ class AccommodationService {
     }
   }
 
-  async editManagerAccommodationRoomListOrder(payload: { id: number; seq: number }[]) {
-    const data = payload;
+  async editManagerAccommodationRoomListOrder(payload: { manager: number, accommodation_id: number, data: { id: number, seq: number }[] }) {
+    const manager = payload.manager;
+    const accommodation_id = payload.accommodation_id;
+    const data = payload.data;
 
     const f_res = [];
     for (const x of data) {
-      const res = await Model.Rooms.update({ seq: x.seq }, { where: { id: x.id } });
+      const res = await Model.Rooms.update({ seq: x.seq }, { where: { id: x.id, accommodation_id } });
 
       if (res) {
         f_res.push(res);
