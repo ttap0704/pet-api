@@ -240,6 +240,7 @@ class AccommodationService {
         'amenities',
         'additional_info',
         'accommodation_id',
+        'createdAt',
         [
           Model.sequelize.literal(`(
             SELECT label
