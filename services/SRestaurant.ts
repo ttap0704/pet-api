@@ -211,6 +211,11 @@ class RestaurantService {
           require: true,
         },
         {
+          model: Model.EntireMenuCategory,
+          as: 'entire_menu_category',
+          require: true,
+        },
+        {
           model: Model.Images,
           as: 'restaurant_images',
           attributes: ['seq', 'id', 'file_name', 'category', 'restaurant_id'],
