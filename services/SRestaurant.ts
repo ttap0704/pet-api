@@ -515,17 +515,19 @@ class RestaurantService {
         limit: 1,
       });
 
-      const seq = Number(tmp_category[0].dataValues.seq) + 1;
+      let seq = Number(tmp_category[0].dataValues.seq);
+      const data = body.map((item) => {
+        seq++;
+        return {
+          label: item.label,
+          price: Number(item.price),
+          comment: item.comment,
+          restaurant_id: restaurant_id,
+          seq: seq,
+        }
+      });
 
-      const data = {
-        label: body.label,
-        price: Number(body.price),
-        comment: body.comment,
-        restaurant_id: restaurant_id,
-        seq: seq,
-      };
-
-      const res_menu = await Model.ExposureMenu.create(data, {
+      const res_menu = await Model.ExposureMenu.bulkCreate(data, {
         fields: ['label', 'price', 'comment', 'restaurant_id', 'id', 'seq'],
       });
 

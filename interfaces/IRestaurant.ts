@@ -60,7 +60,7 @@ export interface AddManagerRestaurantMenuListAttributes {
     label?: string;
     price?: number;
     comment?: string;
-  };
+  }[];
 }
 
 export interface AddManagerRestaurantCategoryMenuListAttributes {
