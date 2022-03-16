@@ -53,23 +53,3 @@ export interface GetManagerRestaurantListAttributes {
   page: number;
 }
 
-export interface AddManagerRestaurantMenuListAttributes {
-  restaurant_id: number;
-  menu: string;
-  data: {
-    label?: string;
-    price?: number;
-    comment?: string;
-  }[];
-}
-
-export interface AddManagerRestaurantCategoryMenuListAttributes {
-  category_id: number;
-  menu: {
-    category_id: number;
-    seq: number;
-    label: string;
-    price: number;
-    restaurant_id: number;
-  }[];
-}

@@ -3,8 +3,6 @@ import {
   AddRestaurantAttributes,
   Category,
   GetManagerRestaurantListAttributes,
-  AddManagerRestaurantMenuListAttributes,
-  AddManagerRestaurantCategoryMenuListAttributes,
 } from '../interfaces/IRestaurant';
 
 class RestaurantService {
@@ -221,7 +219,12 @@ class RestaurantService {
           attributes: ['seq', 'id', 'file_name', 'category', 'restaurant_id'],
         },
       ],
-      order: [[{ model: Model.Images, as: 'restaurant_images' }, 'seq', 'ASC']],
+      order: [
+        [{ model: Model.ExposureMenu, as: 'exposure_menu' }, 'seq', 'ASC'],
+        [{ model: Model.EntireMenu, as: 'entire_menu' }, 'seq', 'ASC'],
+        [{ model: Model.EntireMenuCategory, as: 'entire_menu_category' }, 'seq', 'ASC'],
+        [{ model: Model.Images, as: 'restaurant_images' }, 'seq', 'ASC']
+      ],
       offset: offset,
       limit: 5,
     });
@@ -399,7 +402,7 @@ class RestaurantService {
     return category;
   }
 
-  public async addManagerRestaurantCategoryList(payload: { restaurant_id: number; category: string }) {
+  public async addManagerRestaurantCategoryList(payload: { restaurant_id: number; category: string[] }) {
     const restaurant_id = payload.restaurant_id;
     const category = payload.category;
 
@@ -411,13 +414,17 @@ class RestaurantService {
       limit: 1,
     });
 
-    const seq = Number(tmp_category[0].dataValues.seq) + 1;
-
-    const res_category = await Model.EntireMenuCategory.create({
-      category,
-      seq,
-      restaurant_id,
+    let seq = tmp_category[0] ? Number(tmp_category[0].dataValues.seq) : 0;
+    const data = category.map((item) => {
+      seq++;
+      return {
+        category: item,
+        seq: seq,
+        restaurant_id
+      }
     });
+
+    const res_category = await Model.EntireMenuCategory.bulkCreate(data);
 
     return res_category;
   }
@@ -466,20 +473,33 @@ class RestaurantService {
   }
 
   public async addManagerRestaurantCategoryMenuList(payload: AddManagerRestaurantCategoryMenuListAttributes) {
+    const restaurant_id = payload.restaurant_id
     const category_id = payload.category_id;
     const menu = payload.menu;
 
-    const bulk_data = menu.map(item => {
+    const tmp_category = await Model.EntireMenu.findAll({
+      where: {
+        restaurant_id,
+        category_id,
+      },
+      order: [['seq', 'DESC']],
+      limit: 1,
+    });
+
+    let seq = tmp_category[0] ? Number(tmp_category[0].dataValues.seq) : 0;
+
+    const data = menu.map((item) => {
+      seq++;
       return {
         label: item.label,
         price: item.price,
-        seq: item.seq,
-        category_id: item.category_id,
-        restaurant_id: item.restaurant_id,
-      };
+        category_id,
+        seq,
+        restaurant_id
+      }
     });
 
-    const menus = await Model.EntireMenu.bulkCreate(bulk_data, {
+    const menus = await Model.EntireMenu.bulkCreate(data, {
       fields: ['label', 'price', 'category_id', 'restaurant_id', 'seq'],
     });
 
@@ -532,6 +552,32 @@ class RestaurantService {
       });
 
       return res_menu;
+    } else if (menu == 'entire_menu') {
+      const tmp_category = await Model.EntireMenu.findAll({
+        where: {
+          restaurant_id,
+        },
+        order: [['seq', 'DESC']],
+        limit: 1,
+      });
+
+      let seq = Number(tmp_category[0].dataValues.seq);
+      const data = body.map((item) => {
+        seq++;
+        return {
+          label: item.label,
+          price: Number(item.price),
+          comment: item.comment,
+          restaurant_id: restaurant_id,
+          seq: seq,
+        }
+      });
+
+      const res_menu = await Model.ExposureMenu.bulkCreate(data, {
+        fields: ['label', 'price', 'comment', 'restaurant_id', 'id', 'seq'],
+      });
+
+      return res_menu;
     }
   }
 
@@ -554,6 +600,31 @@ class RestaurantService {
     } else {
       return false;
     }
+  }
+
+  async editManagerRestaurantMenuListOrder(payload: { restaurant_id: number; menu: string; data: { id: number, seq: number }[] }) {
+    const restaurant_id = payload.restaurant_id;
+    const menu = payload.menu;
+    const data = payload.data;
+    const f_res = [];
+    for (const x of data) {
+      let res = null;
+      if (menu == 'exposure_menu') {
+        res = await Model.ExposureMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
+      } else if (menu == 'category') {
+        res = await Model.EntireMenuCategory.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
+      } else if (menu == 'exposure_menu') {
+        res = await Model.EntireMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
+      }
+
+      if (res) {
+        f_res.push(res);
+      } else {
+        return false;
+      }
+    }
+
+    return f_res;
   }
 
   async editManagerRestaurantMenu(payload: {

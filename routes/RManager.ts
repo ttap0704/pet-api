@@ -61,6 +61,7 @@ class Manager {
     this.express.post('/:manager/restaurant/:id/:menu', this.addManagerRestaurantMenu);
     this.express.patch('/:manager/restaurant/:id', this.patchManagerRestaurant);
     this.express.delete('/:manager/restaurant/:id', this.deleteManagerRestaurant);
+    this.express.post('/:manager/restaurant/:id/:menu/order', this.editManagerRestaurantMenuOrder);
     this.express.patch('/:manager/restaurant/:id/:menu/:menu_id', this.patchManagerRestaurantMenu);
     this.express.delete('/:manager/restaurant/:id/:menu/:menu_id', this.deleteManagerRestaurantMenu);
   }
@@ -275,11 +276,26 @@ class Manager {
   addManagerRestaurantCategory = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
       const restaurant_id = Number(req.params.id);
-      const category = req.body.category;
+      const category: RequestCategoryType[] = req.body;
 
-      const list = await this.RestaurantService.addManagerRestaurantCategoryList({ restaurant_id, category });
+      const category_data = category.map(item => {
+        return item.category
+      })
 
-      res.status(200).send(list);
+      const category_list: ResponseCategoryType[] = await this.RestaurantService.addManagerRestaurantCategoryList({ restaurant_id, category: category_data });
+
+      const menu_list = [];
+      for (const item of category) {
+        const category_idx = category_list.findIndex(tmp_category => tmp_category.category == item.category)
+        if (Number(category_idx) >= 0) {
+          const category_id = category_list[category_idx].id;
+          const res_menu = await this.RestaurantService.addManagerRestaurantCategoryMenuList({ restaurant_id, category_id, menu: item.menu })
+
+          menu_list.push(res_menu);
+        }
+      }
+
+      res.status(200).send({ category, category_list, menu_list });
     } catch (err) {
       res.status(500).send();
       throw new Error(err);
@@ -328,10 +344,11 @@ class Manager {
     next: express.NextFunction,
   ) => {
     try {
+      const restaurant_id = Number(req.params.id)
       const category_id = Number(req.params.category_id);
       const menu = req.body.menu;
 
-      const res_menu = await this.RestaurantService.addManagerRestaurantCategoryMenuList({ category_id, menu });
+      const res_menu = await this.RestaurantService.addManagerRestaurantCategoryMenuList({ restaurant_id, category_id, menu });
 
       res.status(200).send(res_menu);
     } catch (err) {
@@ -414,6 +431,20 @@ class Manager {
       throw new Error(err);
     }
   };
+
+  editManagerRestaurantMenuOrder = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const restaurant_id = Number(req.params.id);
+      const menu = req.params.menu
+      const data = req.body;
+      const f_res = await this.RestaurantService.editManagerRestaurantMenuListOrder({ restaurant_id, menu, data });
+
+      res.status(200).send(f_res);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  }
 
   patchManagerRestaurantMenu = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
