@@ -38,7 +38,6 @@ class RestaurantService {
               require: true,
             },
           ],
-          order: [[Model.Images, 'seq', 'ASC']],
         },
         {
           model: Model.EntireMenuCategory,
@@ -375,6 +374,7 @@ class RestaurantService {
             require: true,
           },
         ],
+        order: [[{ model: Model.EntireMenu, as: 'menu' }, 'seq', 'ASC']],
         offset: offset,
         attributes,
         limit: 5,
@@ -397,6 +397,7 @@ class RestaurantService {
           require: true,
         },
       ],
+      order: [[{ model: Model.EntireMenu, as: 'menu' }, 'seq', 'ASC']],
     });
 
     return category;
@@ -613,7 +614,7 @@ class RestaurantService {
         res = await Model.ExposureMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
       } else if (menu == 'category') {
         res = await Model.EntireMenuCategory.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
-      } else if (menu == 'exposure_menu') {
+      } else if (menu == 'entire_menu') {
         res = await Model.EntireMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
       }
 
