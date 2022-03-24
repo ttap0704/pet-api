@@ -5,6 +5,17 @@ declare global {
     path: string;
   }
 
+  interface AddressType {
+    bname: string;
+    building_name: string;
+    detail_address: string;
+    label: string;
+    sido: string;
+    sigungu: string;
+    zonecode: string;
+    road_address: string;
+  }
+
   interface ResponseCategoryType {
     id: number;
     category: string;

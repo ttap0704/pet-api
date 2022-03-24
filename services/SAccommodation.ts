@@ -19,6 +19,8 @@ class AccommodationService {
     return list;
   }
 
+
+
   public async getAccommodationOne(payload: { accommodation_id: number }) {
     const accommodation_id = payload.accommodation_id;
 
@@ -155,7 +157,7 @@ class AccommodationService {
     const accommodation_id = payload.accommodation_id;
     const data = payload.data;
 
-    const tmp_category = await Model.Rooms.findAll({
+    const tmp_rooms = await Model.Rooms.findAll({
       where: {
         accommodation_id,
       },
@@ -163,7 +165,10 @@ class AccommodationService {
       limit: 1,
     });
 
-    let seq = Number(tmp_category[0].dataValues.seq) + 1;
+    let seq = 0;
+    if (tmp_rooms.length > 0) {
+      seq = Number(tmp_rooms[0].dataValues.seq) + 1
+    }
     const bulk_data = []
     for (const list of data) {
       bulk_data.push({
@@ -260,6 +265,26 @@ class AccommodationService {
     });
 
     return { count: count, rows: list };
+  }
+
+  public async updateManagerAccommodationAddress(payload: { accommodation_id: number; address: AddressType }) {
+    const accommodation_id = payload.accommodation_id;
+    const address = payload.address;
+
+    const code = await Model.Accommodation.update(
+      { ...address },
+      {
+        where: {
+          id: accommodation_id,
+        },
+      },
+    );
+
+    if (code >= 0) {
+      return { address, accommodation_id };
+    } else {
+      return false;
+    }
   }
 
   async editManagerAccommodation(payload: { accommodation_id: number; target: string; value: string | number }) {

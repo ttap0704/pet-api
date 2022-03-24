@@ -36,6 +36,7 @@ class Manager {
   private routes(): void {
     // 숙박업소
     this.express.post('/:manager/accommodation', this.addManagerAccommodation);
+    this.express.post('/:manager/accommodation/:id/address', this.updateManagerAccommodationAddress);
     this.express.get('/:manager/accommodation', this.getManagerAccommodation);
     this.express.post('/:manager/accommodation/:id/rooms', this.addManagerAccommodationRooms);
     this.express.get('/:manager/accommodation/rooms', this.getManagerAccommodationRooms);
@@ -47,6 +48,7 @@ class Manager {
 
     // 음식점
     this.express.post('/:manager/restaurant', this.addManagerRestaurant);
+    this.express.post('/:manager/accommodation/:id/address', this.updateManagerRestaurantAddress);
     this.express.get('/:manager/restaurant', this.getManagerRestaurant);
     this.express.get('/:manager/restaurant/:menu', this.getManagerRestaurantMenu);
     this.express.get('/:manager/restaurant/:id/category', this.getManagerRestaurantCategory);
@@ -70,6 +72,19 @@ class Manager {
     try {
       const manager = Number(req.params.manager);
       const f_res = await this.AccommodationService.addManagerAccommodationList({ manager, data: req.body });
+
+      res.status(200).send(f_res);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  updateManagerAccommodationAddress = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const accommodation_id = Number(req.params.id);
+      const address: AddressType = req.body.address;
+      const f_res = await this.AccommodationService.updateManagerAccommodationAddress({ accommodation_id, address });
 
       res.status(200).send(f_res);
     } catch (err) {
@@ -223,6 +238,19 @@ class Manager {
     try {
       const manager = Number(req.params.manager);
       const f_res = await this.RestaurantService.addManagerRestaurantList({ manager, data: req.body });
+
+      res.status(200).send(f_res);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  updateManagerRestaurantAddress = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const restaurant_id = Number(req.params.id);
+      const address: AddressType = req.body.address;
+      const f_res = await this.RestaurantService.updateManagerRestaurantAddress({ restaurant_id, address });
 
       res.status(200).send(f_res);
     } catch (err) {
