@@ -1,5 +1,5 @@
 import Model from '../models';
-import { AddAccommodationAttributes, AddRoomAttributes } from '../interfaces/IAccommodation';
+import { AddRoomAttributes } from '../interfaces/IAccommodation';
 
 class AccommodationService {
   public async getAccommodationList() {
@@ -91,6 +91,16 @@ class AccommodationService {
 
     const accommodation_id = accommodation.dataValues.id;
 
+    const peak_season_data = [];
+    for (const x of data.peak_season) {
+      peak_season_data.push({
+        start: x[0],
+        end: x[1],
+        accommodation_id: accommodation_id,
+      })
+    }
+    const peak_season = await Model.AccommodationPeakSeason.bulkCreate(peak_season_data);
+
     const data_rooms = [];
     for (const x of data.rooms) {
       data_rooms.push({
@@ -109,7 +119,7 @@ class AccommodationService {
       ],
     });
 
-    return { accommodation_id, rooms };
+    return { accommodation_id, peak_season, rooms };
   }
 
   public async getManagerAccommodationList(payload: { manager: number; page: number }) {
@@ -134,6 +144,11 @@ class AccommodationService {
         {
           model: Model.Rooms,
           as: 'accommodation_rooms',
+          require: true,
+        },
+        {
+          model: Model.AccommodationPeakSeason,
+          as: 'accommodation_peak_season',
           require: true,
         },
         {
