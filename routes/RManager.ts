@@ -37,6 +37,7 @@ class Manager {
     // 숙박업소
     this.express.post('/:manager/accommodation', this.addManagerAccommodation);
     this.express.post('/:manager/accommodation/:id/address', this.updateManagerAccommodationAddress);
+    this.express.post('/:manager/accommodation/:id/season', this.updateManagerAccommodationSeason);
     this.express.get('/:manager/accommodation', this.getManagerAccommodation);
     this.express.post('/:manager/accommodation/:id/rooms', this.addManagerAccommodationRooms);
     this.express.get('/:manager/accommodation/rooms', this.getManagerAccommodationRooms);
@@ -85,6 +86,19 @@ class Manager {
       const accommodation_id = Number(req.params.id);
       const address: AddressType = req.body.address;
       const f_res = await this.AccommodationService.updateManagerAccommodationAddress({ accommodation_id, address });
+
+      res.status(200).send(f_res);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  updateManagerAccommodationSeason = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const accommodation_id = Number(req.params.id);
+      const season: PeakSeasontype[] = req.body.season;
+      const f_res = await this.AccommodationService.updateManagerAccommodationSeasonData({ accommodation_id, season });
 
       res.status(200).send(f_res);
     } catch (err) {

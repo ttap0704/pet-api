@@ -41,6 +41,12 @@ declare global {
     road_address: string;
   }
 
+  interface PeakSeasontype {
+    start: string;
+    end: string;
+  }
+
+
   interface ResponseCategoryType {
     id: number;
     category: string;

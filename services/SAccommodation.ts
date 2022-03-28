@@ -302,6 +302,33 @@ class AccommodationService {
     }
   }
 
+  public async updateManagerAccommodationSeasonData(payload: { accommodation_id: number; season: PeakSeasontype[] }) {
+    const accommodation_id = payload.accommodation_id;
+    const season = payload.season;
+
+    await Model.AccommodationPeakSeason.destroy(
+      {
+        where: {
+          accommodation_id: accommodation_id,
+        },
+      },
+    );
+
+    const season_data = season.map(item => {
+      return {
+        ...item,
+        accommodation_id
+      }
+    })
+    const new_season = await Model.AccommodationPeakSeason.bulkCreate(season_data);
+
+    if (new_season.length >= 0) {
+      return new_season;
+    } else {
+      return false;
+    }
+  }
+
   async editManagerAccommodation(payload: { accommodation_id: number; target: string; value: string | number }) {
     const accommodation_id = payload.accommodation_id;
     const target = payload.target;
