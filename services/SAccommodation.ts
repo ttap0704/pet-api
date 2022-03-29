@@ -1,5 +1,4 @@
 import Model from '../models';
-import { AddRoomAttributes } from '../interfaces/IAccommodation';
 
 class AccommodationService {
   public async getAccommodationList() {
@@ -108,16 +107,7 @@ class AccommodationService {
         accommodation_id: accommodation_id,
       });
     }
-    const rooms = await Model.Rooms.bulkCreate(data_rooms, {
-      fields: [
-        'label',
-        'maximum_num',
-        'price',
-        'standard_num',
-        'accommodation_id',
-        'seq',
-      ],
-    });
+    const rooms = await Model.Rooms.bulkCreate(data_rooms);
 
     return { accommodation_id, peak_season, rooms };
   }
@@ -193,21 +183,7 @@ class AccommodationService {
       seq++;
     }
 
-    const rooms = await Model.Rooms.bulkCreate(
-      bulk_data,
-      {
-        fields: [
-          'label',
-          'maximum_num',
-          'price',
-          'standard_num',
-          'accommodation_id',
-          'amenities',
-          'additional_info',
-          'seq',
-        ],
-      },
-    );
+    const rooms = await Model.Rooms.bulkCreate(bulk_data);
     return rooms;
   }
 
@@ -254,7 +230,10 @@ class AccommodationService {
         'id',
         'seq',
         'label',
-        'price',
+        'normal_price',
+        'normal_weekend_price',
+        'peak_price',
+        'peak_weekend_price',
         'standard_num',
         'maximum_num',
         'amenities',
