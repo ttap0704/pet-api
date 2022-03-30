@@ -5,7 +5,7 @@ declare global {
     path: string;
   }
 
-  export interface AddAccommodationAttributes {
+  interface AddAccommodationAttributes {
     manager: number;
     data: {
       bname: string;
@@ -18,31 +18,26 @@ declare global {
       road_address: string;
       introduction: string;
       peak_season: string[][];
-      rooms: {
-        label: string;
-        price: number;
-        maximum_num: number;
-        standard_num: number;
-        amenities: string;
-        additional_info: number;
-        seq: number;
-      }[];
+      rooms: RoomsType[];
     };
   }
 
-  export interface AddRoomAttributes {
+  interface RoomsType {
+    label: string;
+    normal_price: number;
+    normal_weekend_price: number;
+    peak_price: number;
+    peak_weekend_price: number;
+    maximum_num: number;
+    standard_num: number;
+    amenities: string;
+    additional_info: number;
+    seq: number;
+  }
+
+  interface AddRoomAttributes {
     accommodation_id: number;
-    data: {
-      label: string;
-      normal_price: number;
-      normal_weekend_price: number;
-      peak_price: number;
-      peak_weekend_price: number;
-      maximum_num: number;
-      standard_num: number;
-      amenities: string;
-      additional_info: number;
-    }[];
+    data: RoomsType[];
   }
 
 

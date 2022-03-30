@@ -413,6 +413,21 @@ class AccommodationService {
 
     return f_res;
   }
+
+  async editManagerAccommodationRoomListPrice(payload: { manager: number, accommodation_id: number, rooms_id: number, data: RoomsType }) {
+    const manager = payload.manager;
+    const accommodation_id = payload.accommodation_id;
+    const rooms_id = payload.rooms_id
+    const data = payload.data;
+
+    const code = await Model.Rooms.update({ ...data }, { where: { id: rooms_id, accommodation_id } });
+
+    if (code >= 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
 
 export default AccommodationService;
