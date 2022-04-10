@@ -30,6 +30,8 @@ declare global {
     peak_weekend_price: number;
     maximum_num: number;
     standard_num: number;
+    entrance: string;
+    leaving: string;
     amenities: string;
     additional_info: number;
     seq: number;

@@ -34,7 +34,6 @@ class AccommodationService {
               model: Model.Images,
               as: 'rooms_images',
               require: true,
-              order: ['seq', 'ASC'],
             },
           ],
         },
@@ -42,8 +41,12 @@ class AccommodationService {
           model: Model.Images,
           as: 'accommodation_images',
           require: true,
-          order: ['seq', 'ASC'],
         },
+        {
+          model: Model.AccommodationPeakSeason,
+          as: 'accommodation_peak_season',
+          require: true,
+        }
       ],
       where: { id: accommodation_id },
       order: [
