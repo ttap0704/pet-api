@@ -240,6 +240,8 @@ class AccommodationService {
         'standard_num',
         'maximum_num',
         'amenities',
+        'entrance',
+        'leaving',
         'additional_info',
         'accommodation_id',
         'createdAt',
@@ -417,7 +419,7 @@ class AccommodationService {
     return f_res;
   }
 
-  async editManagerAccommodationRoomListPrice(payload: { manager: number, accommodation_id: number, rooms_id: number, data: RoomsType }) {
+  async editManagerAccommodationRoomListInfo(payload: { manager: number, accommodation_id: number, rooms_id: number, data: RoomsType }) {
     const manager = payload.manager;
     const accommodation_id = payload.accommodation_id;
     const rooms_id = payload.rooms_id

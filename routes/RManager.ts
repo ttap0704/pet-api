@@ -46,7 +46,7 @@ class Manager {
     this.express.patch('/:manager/accommodation/:id/rooms/:rooms_id', this.patchManagerAccommodationRoom);
     this.express.delete('/:manager/accommodation/:id/rooms/:rooms_id', this.deleteManagerAccommodationRoom);
     this.express.post('/:manager/accommodation/:id/rooms/order', this.editManagerAccommodationRoomOrder);
-    this.express.post('/:manager/accommodation/:id/rooms/:rooms_id/price', this.editManagerAccommodationRoomPrice);
+    this.express.post('/:manager/accommodation/:id/rooms/:rooms_id/info', this.editManagerAccommodationRoomInfo);
 
     // 음식점
     this.express.post('/:manager/restaurant', this.addManagerRestaurant);
@@ -245,13 +245,13 @@ class Manager {
     }
   };
 
-  editManagerAccommodationRoomPrice = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  editManagerAccommodationRoomInfo = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
       const manager = Number(req.params.manager);
       const accommodation_id = Number(req.params.id);
       const rooms_id = Number(req.params.rooms_id)
       const data: RoomsType = req.body;
-      const f_res = await this.AccommodationService.editManagerAccommodationRoomListPrice({ manager, accommodation_id, rooms_id, data });
+      const f_res = await this.AccommodationService.editManagerAccommodationRoomListInfo({ manager, accommodation_id, rooms_id, data });
 
       res.status(200).send(f_res);
     } catch (err) {
