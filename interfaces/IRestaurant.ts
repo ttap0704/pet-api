@@ -1,5 +1,11 @@
 export interface RestaurantAttributes {
   id: number;
+  contact: string;
+  site: string;
+  kakao_chat: string;
+  open: string;
+  close: string;
+  last_order: string;
   bname: string | null;
   building_name: string | null;
   detail_address: string | null;

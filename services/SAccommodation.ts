@@ -74,6 +74,9 @@ class AccommodationService {
         road_address: data.road_address,
         manager: manager,
         introduction: data.introduction,
+        contact: data.contact,
+        site: data.site,
+        kakao_chat: data.kakao_chat,
       },
       {
         fields: [
@@ -87,6 +90,9 @@ class AccommodationService {
           'road_address',
           'manager',
           'introduction',
+          'contact',
+          'site',
+          'kakao_chat',
         ],
       },
     );
@@ -281,6 +287,26 @@ class AccommodationService {
 
     if (code >= 0) {
       return { address, accommodation_id };
+    } else {
+      return false;
+    }
+  }
+
+  public async updateManagerAccommodationServiceInfo(payload: { accommodation_id: number; service_info: ServiceInfoType }) {
+    const accommodation_id = payload.accommodation_id;
+    const service_info = payload.service_info;
+
+    const code = await Model.Accommodation.update(
+      { ...service_info },
+      {
+        where: {
+          id: accommodation_id,
+        },
+      },
+    );
+
+    if (code >= 0) {
+      return { service_info, accommodation_id };
     } else {
       return false;
     }

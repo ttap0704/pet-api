@@ -17,6 +17,9 @@ declare global {
       zonecode: string;
       road_address: string;
       introduction: string;
+      contact: string;
+      site: string;
+      kakao_chat: string;
       peak_season: string[][];
       rooms: RoomsType[];
     };
@@ -52,6 +55,12 @@ declare global {
     sigungu: string;
     zonecode: string;
     road_address: string;
+  }
+
+  interface ServiceInfoType {
+    contact: string;
+    site: string;
+    kakao_chat: string;
   }
 
   interface PeakSeasontype {
