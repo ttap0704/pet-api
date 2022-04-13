@@ -90,6 +90,12 @@ class RestaurantService {
         road_address: data.road_address,
         manager: manager,
         introduction: data.introduction,
+        contact: data.contact,
+        site: data.site,
+        kakao_chat: data.kakao_chat,
+        open: data.open,
+        close: data.close,
+        last_order: data.last_order,
       },
       {
         fields: [
@@ -103,6 +109,12 @@ class RestaurantService {
           'road_address',
           'manager',
           'introduction',
+          'contact',
+          'site',
+          'kakao_chat',
+          'open',
+          'close',
+          'last_order',
         ],
       },
     );

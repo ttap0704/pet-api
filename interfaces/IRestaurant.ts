@@ -36,6 +36,12 @@ export interface AddRestaurantAttributes {
     zonecode: string;
     road_address: string;
     introduction: string;
+    contact: string;
+    site: string;
+    kakao_chat: string;
+    open: string;
+    close: string;
+    last_order: string;
     entireMenu: {
       category: string;
       seq: number;
