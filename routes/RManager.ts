@@ -51,7 +51,8 @@ class Manager {
 
     // 음식점
     this.express.post('/:manager/restaurant', this.addManagerRestaurant);
-    this.express.post('/:manager/accommodation/:id/address', this.updateManagerRestaurantAddress);
+    this.express.post('/:manager/restaurant/:id/address', this.updateManagerRestaurantAddress);
+    this.express.post('/:manager/restaurant/:id/service', this.updateManagerRestaurantServiceInfo);
     this.express.get('/:manager/restaurant', this.getManagerRestaurant);
     this.express.get('/:manager/restaurant/:menu', this.getManagerRestaurantMenu);
     this.express.get('/:manager/restaurant/:id/category', this.getManagerRestaurantCategory);
@@ -291,6 +292,19 @@ class Manager {
       const restaurant_id = Number(req.params.id);
       const address: AddressType = req.body.address;
       const f_res = await this.RestaurantService.updateManagerRestaurantAddress({ restaurant_id, address });
+
+      res.status(200).send(f_res);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  updateManagerRestaurantServiceInfo = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const restaurant_id = Number(req.params.id);
+      const service_info: RestaurantServiceInfoType = req.body.service_info;
+      const f_res = await this.RestaurantService.updateManagerRestaurantServiceInfo({ restaurant_id, service_info });
 
       res.status(200).send(f_res);
     } catch (err) {

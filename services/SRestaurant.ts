@@ -614,6 +614,26 @@ class RestaurantService {
     }
   }
 
+  public async updateManagerRestaurantServiceInfo(payload: { restaurant_id: number; service_info: RestaurantServiceInfoType }) {
+    const restaurant_id = payload.restaurant_id;
+    const service_info = payload.service_info;
+
+    const code = await Model.Restaurant.update(
+      { ...service_info },
+      {
+        where: {
+          id: restaurant_id,
+        },
+      },
+    );
+
+    if (code >= 0) {
+      return { service_info, restaurant_id };
+    } else {
+      return false;
+    }
+  }
+
   async editManagerRestaurant(payload: { restaurant_id: number; target: string; value: string }) {
     const restaurant_id = payload.restaurant_id;
     const target = payload.target;

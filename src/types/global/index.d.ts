@@ -63,6 +63,12 @@ declare global {
     kakao_chat: string;
   }
 
+  interface RestaurantServiceInfoType extends ServiceInfoType {
+    open: string;
+    close: string;
+    last_order: string;
+  }
+
   interface PeakSeasontype {
     start: string;
     end: string;
