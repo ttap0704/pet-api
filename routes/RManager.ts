@@ -30,7 +30,7 @@ class Manager {
 
   // Configure Express middleware.
   private middleware(): void {
-    // this.express.use(this.JwtService.verifyToken);
+    this.express.use(this.JwtService.verifyToken);
   }
 
   private routes(): void {

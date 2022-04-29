@@ -37,7 +37,7 @@ class User {
         req.session.uid = user.uid;
         req.session.save();
 
-        const token = await this.JwtService.createToken({ login_id: user.login_id, uid: user.uid });
+        const token = await this.JwtService.createToken({ uid: user.uid });
         res.cookie('access-token', token, {
           maxAge: 60 * 60 * 12 * 1000,
           secure: false,
@@ -55,7 +55,6 @@ class User {
 
   private joinUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      console.log(this);
       this.logger.info('url:::::::' + req.url);
       const data = req.body;
       const user = await this.UserService.create({
