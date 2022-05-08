@@ -27,7 +27,6 @@ class JwtService {
       const access_token = auth[1];
       if (access_token) {
         jwt.verify(access_token, `${process.env.JWT_SECRET}`, (err, payload) => {
-
           if (!err) {
             next();
           } else {
@@ -38,21 +37,22 @@ class JwtService {
               };
 
               const tmp_token = jwt.sign(token_data, `${process.env.JWT_SECRET}`, { expiresIn: process.env.JWT_EXPIRE_IN });
-              res.cookie('access-token', tmp_token, {
+              res.cookie('a-token', tmp_token, {
                 maxAge: 60 * 60 * 12 * 1000,
                 secure: false,
                 httpOnly: true,
               });
               res.status(200).send({ new_token: tmp_token });
             } else {
-              res.status(204).send();
+              res.status(403).send();
             }
           }
         });
       } else {
-        res.status(204).send();
-        return false;
+        res.status(403).send();
       }
+    } else {
+      res.status(403).send();
     }
   }
 }

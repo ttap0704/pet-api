@@ -10,6 +10,12 @@ class UserService {
     return created_user;
   }
 
+  async setBusinessInfo(payload: CreateUserAttributes) {
+    const created_business = await Model.Users.create(payload);
+
+    return created_business;
+  }
+
   async findUser(payload: loginUserAttributes) {
     const login_id = payload.id;
     const password = payload.password;
