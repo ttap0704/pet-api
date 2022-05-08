@@ -4,6 +4,9 @@ import Model from '../models';
 import { resLoginUserAttributes } from '../interfaces/IUser';
 import UserService from '../services/SUser';
 import JwtService from '../services/SJwt';
+import EmailService from '../services/SEmail'
+import { generateRandom } from '../src/utils/tools'
+
 const fetch = require('node-fetch');
 
 class User {
@@ -13,6 +16,7 @@ class User {
   public data: object;
   public UserService: UserService;
   public JwtService: JwtService;
+  public EmailService: EmailService;
 
   constructor() {
     this.express = express();
@@ -22,6 +26,7 @@ class User {
     this.logger = new Logger();
     this.UserService = new UserService();
     this.JwtService = new JwtService();
+    this.EmailService = new EmailService();
   }
 
   private middleware(): void { }
@@ -98,6 +103,18 @@ class User {
     try {
       this.logger.info('url:::::::' + req.url);
       const { join_data, business_data } = req.body;
+
+      const check_id = await this.UserService.checkLoginId({ login_id: join_data.id });
+      if (check_id && Number(check_id.id) > 0) {
+        res.status(200).send({ pass: false, message: 'Duplicate Email' })
+        return;
+      }
+
+      const check_nick = await this.UserService.checkNickName({ nickname: join_data.nickname });
+      if (check_nick && Number(check_nick.id) > 0) {
+        res.status(200).send({ pass: false, message: 'Duplicate Nick' })
+        return;
+      }
       const user = await this.UserService.create({
         login_id: join_data.id,
         password: join_data.password,
@@ -113,7 +130,21 @@ class User {
         manager: user.id
       })
 
-      res.json({ user, businesses_data });
+      if (user && business_data) {
+        const random_num = generateRandom(111111, 999999);
+        const email_data = {
+          to_name: join_data.name,
+          to: join_data.id,
+          subject: '테스트 이메일 인증',
+          message: `테스트에서 인증번호 보내드립니다.<br/><br/> <b>${random_num}</b>`
+        }
+        await this.EmailService.sendEmail(email_data)
+
+        res.status(200).json({ pass: true, user, businesses_data });
+      } else {
+        res.status(200).json({ pass: false, message: 'Error Join' });
+      }
+
     } catch (err) {
       res.status(500).send();
       throw new Error(err);

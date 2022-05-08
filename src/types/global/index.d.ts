@@ -57,6 +57,16 @@ declare global {
     road_address: string;
   }
 
+  interface BusinessType {
+    id: number;
+    b_nm: string
+    b_no: string
+    b_sector: string
+    b_type: string
+    p_nm: string
+    start_dt: string
+  }
+
   interface ServiceInfoType {
     contact: string;
     site: string;

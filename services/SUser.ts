@@ -1,6 +1,10 @@
 import Model from '../models';
 import { UsersAttributes, CreateUserAttributes, loginUserAttributes } from '../interfaces/IUser';
 
+interface CreateBusinessType extends BusinessType {
+  manager: number
+}
+
 class UserService {
   async create(payload: CreateUserAttributes) {
     const created_user = await Model.Users.create(payload, {
@@ -10,10 +14,34 @@ class UserService {
     return created_user;
   }
 
-  async setBusinessInfo(payload: CreateUserAttributes) {
-    const created_business = await Model.Users.create(payload);
+  async setBusinessInfo(payload: CreateBusinessType) {
+    const created_business = await Model.Business.create(payload);
 
     return created_business;
+  }
+
+  async checkLoginId(payload: { login_id: string }) {
+    const login_id = payload.login_id;
+
+    const check = await Model.Users.findOne({
+      where: {
+        login_id
+      }
+    })
+
+    return check;
+  }
+
+  async checkNickName(payload: { nickname: string }) {
+    const nickname = payload.nickname;
+
+    const check = await Model.Users.findOne({
+      where: {
+        nickname
+      }
+    })
+
+    return check;
   }
 
   async findUser(payload: loginUserAttributes) {
