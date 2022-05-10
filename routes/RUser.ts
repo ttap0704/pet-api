@@ -1,12 +1,12 @@
 import * as express from 'express';
 import { Logger } from '../logger/logger';
 import Model from '../models';
-import { resLoginUserAttributes } from '../interfaces/IUser';
 import UserService from '../services/SUser';
 import JwtService from '../services/SJwt';
 import EmailService from '../services/SEmail'
 import { generateRandom } from '../src/utils/tools'
 import { getCertificationContents } from '../src/utils/email_tools'
+import { ACCOMMODATION_BUSINESS_CODE_LIST, RESTAURANT_BUSINESS_CODE_LIST } from '../constant'
 
 const fetch = require('node-fetch');
 
@@ -41,21 +41,42 @@ class User {
 
   private loginUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      const user: resLoginUserAttributes = await this.UserService.findUser(req.body);
-      if (user.pass == true) {
-        req.session.uid = user.uid;
-        req.session.save();
+      const { id, password } = req.body;
 
-        const token = await this.JwtService.createToken({ uid: user.uid });
-        res.cookie('a-token', token, {
-          maxAge: 60 * 60 * 12 * 1000,
-          secure: false,
-          httpOnly: true,
-        });
-
-        user.token = `${token}`;
+      if (id.length == 0 || password?.length == 0 || password == null) {
+        res.status(200).send({ pass: false, message: 'Empty Data' })
+        return;
       }
-      res.status(200).send(user);
+
+      const user: UsersAttributes = await this.UserService.findUser(req.body);
+
+      const validate = await Model.Users.prototype.validPassword(password, user.password);
+
+      let pass = true;
+      let message = '';
+      let a_token = '';
+      let f_user = {};
+      if (validate) {
+        if (user.certification == 0) {
+          pass = false;
+          message = 'Before Certification';
+        } else {
+          const token = await this.JwtService.createToken({ uid: user.id });
+          res.cookie('a-token', token, {
+            maxAge: 60 * 60 * 12 * 1000,
+            secure: false,
+            httpOnly: true,
+          });
+
+          a_token = `${token}`;
+          f_user = user;
+        }
+
+      } else {
+        pass = false;
+        message = 'Wrong Password'
+      }
+      res.status(200).send({ pass, message, user: f_user, token: a_token });
     } catch (err) {
       res.status(500).send();
       throw new Error(err);
@@ -69,6 +90,12 @@ class User {
 
       this.logger.info('url:::::::' + req.url);
       const data = req.body;
+
+      // if (!ACCOMMODATION_BUSINESS_CODE_LIST.includes(data.b_type) && !RESTAURANT_BUSINESS_CODE_LIST.includes(data.b_type)) {
+      //   res.status(200).send({ pass: false, message: 'Not Target' });
+      //   return;
+      // }
+
       const cert_data = {
         businesses: [
           {
@@ -88,12 +115,12 @@ class User {
         },
       );
 
+
       const cert_res_json = await cert_res.json();
       let pass = false;
       if (cert_res_json.data[0].valid === '01') {
         pass = true
       }
-      console.log(cert_res_json)
       res.status(200).send({ pass });
     } catch (err) {
       res.status(500).send();
@@ -117,6 +144,17 @@ class User {
         res.status(200).send({ pass: false, message: 'Duplicate Nick' })
         return;
       }
+
+      // let user_type = null;
+      // if (ACCOMMODATION_BUSINESS_CODE_LIST.includes(business_data.b_type)) {
+      //   user_type = 2
+      // } else if (RESTAURANT_BUSINESS_CODE_LIST.includes(business_data.b_type)) {
+      //   user_type = 1
+      // } else {
+      //   res.status(200).json({ pass: false, message: 'Not Target' });
+      //   return;
+      // }
+
       const user = await this.UserService.create({
         login_id: join_data.id,
         password: join_data.password,
@@ -124,7 +162,7 @@ class User {
         phone: '01043759006',
         nickname: join_data.nickname,
         profile_path: 'super_profile.jpeg',
-        type: 0,
+        type: 1,
       });
 
       const businesses_data = await this.UserService.setBusinessInfo({
@@ -173,11 +211,13 @@ class User {
           pass = false;
           message = 'Wrong Number'
         } else {
+          await this.UserService.deleteCertRow({ id })
           await this.UserService.updateUser({ id: cert_row.manager, target: 'certification', value: 1 })
         }
         res.status(200).send({ pass, message });
       }
     } catch (err) {
+      50
       res.status(500).send();
       throw new Error(err);
     }
