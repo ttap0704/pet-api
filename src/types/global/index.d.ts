@@ -57,6 +57,15 @@ declare global {
     road_address: string;
   }
 
+  interface JoinCertificationType {
+    id: number;
+    cert_num: string;
+  }
+
+  interface JoinCertificationRowType extends JoinCertificationType {
+    manager: number
+  }
+
   interface BusinessType {
     id: number;
     b_nm: string

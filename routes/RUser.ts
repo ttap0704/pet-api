@@ -6,6 +6,7 @@ import UserService from '../services/SUser';
 import JwtService from '../services/SJwt';
 import EmailService from '../services/SEmail'
 import { generateRandom } from '../src/utils/tools'
+import { getCertificationContents } from '../src/utils/email_tools'
 
 const fetch = require('node-fetch');
 
@@ -35,6 +36,7 @@ class User {
     this.express.post('/login', this.loginUser);
     this.express.post('/certification', this.certBusinessUser)
     this.express.post('/join', this.joinUser);
+    this.express.post('/join/certification', this.certUser);
   }
 
   private loginUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -132,19 +134,49 @@ class User {
 
       if (user && business_data) {
         const random_num = generateRandom(111111, 999999);
+        const cert_res = await this.UserService.createCertNum({ cert_num: `${random_num}`, manager: user.id })
         const email_data = {
           to_name: join_data.name,
           to: join_data.id,
-          subject: '테스트 이메일 인증',
-          message: `테스트에서 인증번호 보내드립니다.<br/><br/> <b>${random_num}</b>`
+          subject: '[어디어디] 회원가입 이메일 인증',
+          message: getCertificationContents(random_num, `http://localhost:3001/manage/join/certification/${cert_res.id}`)
         }
         await this.EmailService.sendEmail(email_data)
 
-        res.status(200).json({ pass: true, user, businesses_data });
+
+
+        res.status(200).json({ pass: true, user, businesses_data, cert_res });
       } else {
         res.status(200).json({ pass: false, message: 'Error Join' });
       }
 
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  private certUser = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      this.logger.info('url:::::::' + req.url);
+      const { cert_num, id } = req.body;
+
+      const cert_row: JoinCertificationRowType = await this.UserService.getCertRow({ id: Number(id) })
+      if (!cert_row) {
+        res.status(200).send({ pass: false, message: 'Wrong Path' });
+      } else {
+        const validate = await this.UserService.checkCertNum({ cert_num, row: cert_row })
+
+        let pass = true;
+        let message = '';
+        if (!validate) {
+          pass = false;
+          message = 'Wrong Number'
+        } else {
+          await this.UserService.updateUser({ id: cert_row.manager, target: 'certification', value: 1 })
+        }
+        res.status(200).send({ pass, message });
+      }
     } catch (err) {
       res.status(500).send();
       throw new Error(err);

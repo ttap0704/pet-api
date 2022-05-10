@@ -9,6 +9,7 @@ export interface UsersAttributes {
   profile_path: string;
   // license_id: number;
   type: number;
+  certification: number;
 }
 
 export interface CreateUserAttributes {

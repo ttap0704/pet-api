@@ -14,6 +14,35 @@ class UserService {
     return created_user;
   }
 
+  async createCertNum(payload: { cert_num: string, manager: number }) {
+    const cert_num = payload.cert_num;
+    const manager = payload.manager;
+
+    const created_cert_num = await Model.JoinCertification.create({ cert_num, manager });
+
+    return created_cert_num;
+  }
+
+  async getCertRow(payload: { id: number }) {
+    const id = payload.id;
+
+    const cert_data = await Model.JoinCertification.findOne({
+      where: {
+        id
+      }
+    })
+
+    return cert_data;
+  }
+
+  async checkCertNum(payload: { cert_num: string, row: JoinCertificationType }) {
+    const cert_num = payload.cert_num;
+    const row = payload.row
+    const validate = await Model.Users.prototype.validPassword(cert_num, row.cert_num);
+
+    return validate
+  }
+
   async setBusinessInfo(payload: CreateBusinessType) {
     const created_business = await Model.Business.create(payload);
 
@@ -30,6 +59,21 @@ class UserService {
     })
 
     return check;
+  }
+
+  async updateUser(payload: { id: number, target: string, value: string | number }) {
+    const target = payload.target;
+    const value = payload.value;
+    const id = payload.id;
+
+    const update_res = await Model.Users.update({ [target]: value },
+      {
+        where: {
+          id,
+        },
+      })
+
+    return update_res;
   }
 
   async checkNickName(payload: { nickname: string }) {
@@ -68,6 +112,11 @@ class UserService {
     let message = '';
     let pass = false;
     if (validate) {
+      console.log(user)
+      if (user.certification == 0) {
+        pass = false;
+        message = '이메일 인증이 완료되지 않은 계정입니다.'
+      }
       message = `${user.nickname}님 환영합니다!`;
       pass = true;
     } else {

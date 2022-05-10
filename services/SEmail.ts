@@ -23,7 +23,7 @@ class EmailService {
       });
       const mailOption = {
         from: {
-          name: '테스트', // 보내는 사람 이름
+          name: '[어디어디]', // 보내는 사람 이름
           address: `${process.env.EMAIL_ADDRESS}` // 보내는 사람 이메일 주소
         },
         to: {
