@@ -11,7 +11,7 @@ class AccommodationService {
           attributes: ['file_name'],
         },
       ],
-      attributes: ['sigungu', 'bname', 'label', 'id'],
+      attributes: ['sido', 'sigungu', 'bname', 'label', 'id'],
       order: [[{ model: Model.Images, as: 'accommodation_images' }, 'seq', 'ASC']],
     });
 
@@ -68,6 +68,7 @@ class AccommodationService {
         building_name: data.building_name,
         detail_address: data.detail_address,
         label: data.label,
+        type: data.type,
         sido: data.sido,
         sigungu: data.sigungu,
         zonecode: data.zonecode,
@@ -84,6 +85,7 @@ class AccommodationService {
           'building_name',
           'detail_address',
           'label',
+          'type',
           'sido',
           'sigungu',
           'zonecode',

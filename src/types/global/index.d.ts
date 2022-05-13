@@ -49,6 +49,7 @@ declare global {
       contact: string;
       site: string;
       kakao_chat: string;
+      type: number;
       peak_season: string[][];
       rooms: RoomsType[];
     };

@@ -10,6 +10,7 @@ export interface RestaurantAttributes {
   building_name: string | null;
   detail_address: string | null;
   label: string;
+  type: number;
   sido: string | null;
   sigungu: string | null;
   zonecode: string | null;
@@ -31,6 +32,7 @@ export interface AddRestaurantAttributes {
     building_name: string;
     detail_address: string;
     label: string;
+    type: number;
     sido: string;
     sigungu: string;
     zonecode: string;
