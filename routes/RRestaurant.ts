@@ -24,7 +24,7 @@ class Restraunt {
   }
 
   // Configure Express middleware.
-  private middleware(): void {}
+  private middleware(): void { }
 
   private routes(): void {
     this.express.get('', this.getRestaurant);
@@ -32,7 +32,9 @@ class Restraunt {
   }
   getRestaurant = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      const restaurant = await this.RestaurantService.getRestaurantList();
+      const { types, location, menu } = req.query;
+      const query = { types: types as string, location: location as string, menu: menu as string };
+      const restaurant = await this.RestaurantService.getRestaurantList(query);
       res.status(200).send(restaurant);
     } catch (err) {
       res.status(500).send();

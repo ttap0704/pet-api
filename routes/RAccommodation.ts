@@ -20,7 +20,7 @@ class Accommodation {
   }
 
   // Configure Express middleware.
-  private middleware(): void {}
+  private middleware(): void { }
 
   private routes(): void {
     this.express.get('', this.getAccommodationList);
@@ -29,7 +29,10 @@ class Accommodation {
 
   public getAccommodationList = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      const list = await this.AccommodationService.getAccommodationList();
+      const { types, location } = req.query;
+      const query = { types: types as string, location: location as string };
+
+      const list = await this.AccommodationService.getAccommodationList(query);
       res.status(200).send(list);
     } catch (err) {
       res.status(500).send();

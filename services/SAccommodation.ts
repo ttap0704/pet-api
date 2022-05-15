@@ -1,7 +1,36 @@
 import Model from '../models';
 
 class AccommodationService {
-  public async getAccommodationList() {
+  public async getAccommodationList(query: { types: string, location: string }) {
+
+    const { types, location } = query
+
+    const where: any = {}
+    if (types) {
+      where.type = {
+        [Model.Sequelize.Op.in]: types ? types.split(',') : [1, 2, 3, 4],
+      }
+    }
+
+    if (location) {
+      where[Model.Sequelize.Op.or] = {
+        ...where[Model.Sequelize.Op.or],
+        sido: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+        sigungu: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+        bname: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+        road_address: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+      }
+    }
+
+
     const list = await Model.Accommodation.findAll({
       include: [
         {
@@ -13,6 +42,9 @@ class AccommodationService {
       ],
       attributes: ['sido', 'sigungu', 'bname', 'label', 'id'],
       order: [[{ model: Model.Images, as: 'accommodation_images' }, 'seq', 'ASC']],
+      where: {
+        ...where,
+      }
     });
 
     return list;

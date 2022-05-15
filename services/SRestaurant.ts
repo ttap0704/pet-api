@@ -6,7 +6,34 @@ import {
 } from '../interfaces/IRestaurant';
 
 class RestaurantService {
-  public async getRestaurantList() {
+  public async getRestaurantList(query: { types: string, location: string, menu: string }) {
+    const { types, location, menu } = query
+
+    const where: any = {}
+    if (types) {
+      where.type = {
+        [Model.Sequelize.Op.in]: types ? types.split(',') : [1, 2, 3, 4],
+      }
+    }
+
+    if (location) {
+      where[Model.Sequelize.Op.or] = {
+        ...where[Model.Sequelize.Op.or],
+        sido: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+        sigungu: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+        bname: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+        road_address: {
+          [Model.Sequelize.Op.like]: `%${location}%`
+        },
+      }
+    }
+
     const list = await Model.Restaurant.findAll({
       include: [
         {
@@ -14,9 +41,32 @@ class RestaurantService {
           as: 'restaurant_images',
           require: true,
         },
+        {
+          model: Model.ExposureMenu,
+          as: 'exposure_menu',
+          require: true,
+          attributes: ['label'],
+        },
+        {
+          model: Model.EntireMenuCategory,
+          as: 'entire_menu_category',
+          require: true,
+          attributes: ['category'],
+          include: [
+            {
+              model: Model.EntireMenu,
+              as: 'menu',
+              require: true,
+              attributes: ['label'],
+            },
+          ],
+        },
       ],
-      attributes: ['sido', 'sigungu', 'bname', 'label', 'id'],
+      attributes: ['sido', 'sigungu', 'bname', 'label', 'id',],
       order: [[{ model: Model.Images, as: 'restaurant_images' }, 'seq', 'ASC']],
+      where: {
+        ...where,
+      }
     });
 
     return list;
