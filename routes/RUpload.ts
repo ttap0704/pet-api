@@ -42,8 +42,6 @@ class Upload {
       const data = { length, category, files: req.files };
       const uploaded_images = await this.UploadService.uploadImages(data);
 
-      console.log(uploaded_images);
-
       res.status(200).send(uploaded_images);
     } catch (err) {
       res.status(500).send();

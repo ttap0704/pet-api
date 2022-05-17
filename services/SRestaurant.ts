@@ -34,6 +34,7 @@ class RestaurantService {
       }
     }
 
+
     const list = await Model.Restaurant.findAll({
       include: [
         {
@@ -771,6 +772,7 @@ class RestaurantService {
 
   async deleteManagerRestaurantList(payload: { restaurant_id: number }) {
     const restaurant_id = payload.restaurant_id;
+    console.log(restaurant_id)
 
     const code1 = await Model.EntireMenu.destroy({
       where: {

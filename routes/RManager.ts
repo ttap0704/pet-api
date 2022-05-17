@@ -501,6 +501,7 @@ class Manager {
     try {
       const restaurant_id = Number(req.params.id);
 
+      console.log(restaurant_id)
       const response = await this.RestaurantService.deleteManagerRestaurantList({ restaurant_id });
 
       if (response) {

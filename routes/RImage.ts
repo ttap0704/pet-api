@@ -47,8 +47,9 @@ class Image {
         });
 
         if (images.length > 0) {
+          const parent_dir = Math.floor(Number(id) / 50) * 50
           for (let i = 0, leng = images.length; i < leng; i++) {
-            const path = __dirname + '/../uploads/' + type + '/' + images[i].file_name;
+            const path = __dirname + '/../uploads/' + type + '/' + parent_dir + '/' + images[i].file_name;
             fs.unlink(path, (err: Error) => {
               if (err) {
                 res.status(500).send();
@@ -78,7 +79,10 @@ class Image {
 
   getImage = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
-      const file_path = __dirname + '/../uploads/' + req.params.dir + '/' + req.params.file_name;
+      const dir = req.params.dir;
+      const file_name = req.params.file_name;
+      const parent_dir = Math.floor(Number(file_name.split('.')[0].split('_')[0]) / 50) * 50
+      const file_path = __dirname + '/../uploads/' + dir + '/' + parent_dir + '/' + file_name;
       const resolved_path = path.resolve(file_path);
 
       res.status(200).sendFile(resolved_path);
