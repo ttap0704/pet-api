@@ -25,6 +25,7 @@ class Accommodation {
   private routes(): void {
     this.express.get('', this.getAccommodationList);
     this.express.get('/:id', this.getAccommodationOne);
+    this.express.post('/:id/count', this.updateAccommodationViewsCount);
   }
 
   public getAccommodationList = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -45,6 +46,24 @@ class Accommodation {
       const accommodation_id = Number(req.params.id);
       const accommodation = await this.AccommodationService.getAccommodationOne({ accommodation_id });
       res.json(accommodation);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  updateAccommodationViewsCount = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const { id, postdate } = req.body;
+
+      const get_res = await this.AccommodationService.getAccommodationViewsCount(id, postdate);
+      if (!get_res) {
+        await this.AccommodationService.insertAccommodationViewsCount(id, postdate)
+      } else {
+        await this.AccommodationService.increaseAccommodationViewsCount(id, postdate)
+      }
+
+      res.status(200).send({ pass: true });
     } catch (err) {
       res.status(500).send();
       throw new Error(err);

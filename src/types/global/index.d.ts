@@ -70,6 +70,18 @@ declare global {
     seq: number;
   }
 
+  interface RestaurantViewsCountType {
+    restaurant_id: number;
+    views: number;
+    postdate: string;
+  }
+
+  interface AccommodationViewsCountType {
+    accommodation_id: number;
+    views: number;
+    postdate: string;
+  }
+
   interface AddRoomAttributes {
     accommodation_id: number;
     data: RoomsType[];

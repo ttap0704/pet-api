@@ -29,6 +29,7 @@ class Restraunt {
   private routes(): void {
     this.express.get('', this.getRestaurant);
     this.express.get('/:id', this.getRestaurantOne);
+    this.express.get('/:id/count', this.updateRestaurantCount);
   }
   getRestaurant = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
@@ -49,6 +50,24 @@ class Restraunt {
       const restaurant = await this.RestaurantService.getRestaurantOne({ restaurant_id: id });
 
       res.status(200).send(restaurant);
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err);
+    }
+  };
+
+  updateRestaurantCount = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const { id, postdate } = req.body;
+
+      const get_res = await this.RestaurantService.getRestaurantViewsCount(id, postdate);
+      if (!get_res) {
+        await this.RestaurantService.insertRestaurantViewsCount(id, postdate)
+      } else {
+        await this.RestaurantService.increaseRestaurantViewsCount(id, postdate)
+      }
+
+      res.status(200).send({ pass: true });
     } catch (err) {
       res.status(500).send();
       throw new Error(err);

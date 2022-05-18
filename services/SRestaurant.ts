@@ -6,6 +6,44 @@ import {
 } from '../interfaces/IRestaurant';
 
 class RestaurantService {
+  public async getRestaurantViewsCount(id: number, postdate: string) {
+    const restaurant_id = id;
+    const res = await Model.RestaurantViewsCount.findOne({
+      where: {
+        restaurant_id,
+        postdate
+      }
+    })
+
+    return res;
+  }
+
+  public async insertRestaurantViewsCount(id: number, postdate: string) {
+    const restaurant_id = id;
+    const insert_res = await Model.RestaurantViewsCount.create({
+      restaurant_id,
+      views: 1,
+      postdate
+    })
+
+    return insert_res;
+  }
+
+  public async increaseRestaurantViewsCount(id: number, postdate: string) {
+    const restaurant_id = id;
+
+    const update_res = await Model.RestaurantViewsCount.update({
+      views: Model.Sequelize.literal('views + 1')
+    }, {
+      where: {
+        restaurant_id,
+        postdate
+      }
+    })
+
+    return update_res;
+  }
+
   public async getRestaurantList(query: { types: string, location: string, menu: string }) {
     const { types, location, menu } = query
 

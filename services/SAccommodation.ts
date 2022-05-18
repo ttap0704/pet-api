@@ -1,6 +1,44 @@
 import Model from '../models';
 
 class AccommodationService {
+  public async getAccommodationViewsCount(id: number, postdate: string) {
+    const accommodation_id = id;
+    const res = await Model.AccommodationViewsCount.findOne({
+      where: {
+        accommodation_id,
+        postdate
+      }
+    })
+
+    return res;
+  }
+
+  public async insertAccommodationViewsCount(id: number, postdate: string) {
+    const accommodation_id = id;
+    const insert_res = await Model.AccommodationViewsCount.create({
+      accommodation_id,
+      views: 1,
+      postdate
+    })
+
+    return insert_res;
+  }
+
+  public async increaseAccommodationViewsCount(id: number, postdate: string) {
+    const accommodation_id = id;
+
+    const update_res = await Model.AccommodationViewsCount.update({
+      views: Model.Sequelize.literal('views + 1')
+    }, {
+      where: {
+        accommodation_id,
+        postdate
+      }
+    })
+
+    return update_res;
+  }
+
   public async getAccommodationList(query: { types: string, location: string }) {
 
     const { types, location } = query
