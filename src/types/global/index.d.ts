@@ -1,8 +1,26 @@
+import { Model } from 'sequelize';
 export { };
 
 declare global {
   interface File {
     path: string;
+  }
+
+  interface AccommodationAttributes {
+    id: number;
+    contact: string;
+    site: string;
+    kakao_chat: string;
+    bname: string | null;
+    building_name: string | null;
+    detail_address: string | null;
+    label: string;
+    type: number;
+    sido: string | null;
+    sigungu: string | null;
+    zonecode: string | null;
+    road_address: string;
+    introduction: string | null;
   }
 
   interface UsersAttributes {
@@ -167,6 +185,92 @@ declare global {
       label: string;
       price: number;
     }[];
+  }
+
+  interface AccommodationPeakSeasonAttributes {
+    id: number;
+    start: string;
+    end: string;
+  }
+
+  interface RoomsAttributes {
+    id: number;
+    label: string;
+    normal_price: number;
+    normal_weekend_price: number;
+    peak_price: number;
+    peak_weekend_price: number;
+    standard_num: number;
+    maximum_num: number;
+    entrance: string;
+    leaving: string;
+    amenities: string;
+    additional_info: string;
+    seq: number;
+  }
+
+  interface EntireMenuAttributes {
+    id: number;
+    label: string;
+    price: number;
+    seq: number;
+  }
+
+  interface EntireMenuCategoryAttributes {
+    id: number;
+    category: string;
+    seq: number;
+  }
+
+  interface ExposureMenuAttributes {
+    id: number;
+    label: string;
+    price: number;
+    comment: string;
+    seq: number;
+  }
+  interface RestaurantAttributes {
+    id: number;
+    contact: string;
+    site: string;
+    kakao_chat: string;
+    open: string;
+    close: string;
+    last_order: string;
+    bname: string | null;
+    building_name: string | null;
+    detail_address: string | null;
+    label: string;
+    type: number;
+    sido: string | null;
+    sigungu: string | null;
+    zonecode: string | null;
+    road_address: string | null;
+    introduction: string | null;
+  }
+
+  interface ImagesAttributes {
+    id: number;
+    file_name: string;
+    category: number;
+    seq: number;
+  }
+
+
+  interface ModelType {
+    Users: Model<UsersAttributes>,
+    Accommodation: Model<AccommodationAttributes>
+    AccommodationPeakSeason: Model<AccommodationPeakSeasonAttributes>,
+    AccommodationViewsCount: Model<AccommodationViewsCountType>,
+    Business: Model<BusinessType>,
+    EntireMenu: Model<EntireMenuAttributes>,
+    EntireMenuCategory: Model<EntireMenuCategoryAttributes>,
+    ExposureMenu: Model<ExposureMenuAttributes>,
+    Images: Model<ImagesAttributes>,
+    JoinCertification: Model<JoinCertificationType>,
+    Restaurant: Model<RestaurantAttributes>,
+    RestaurantViewsCount: Model<RestaurantViewsCountType>,
+    Rooms: Model<RoomsAttributes>,
   }
 }
 

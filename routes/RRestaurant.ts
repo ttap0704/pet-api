@@ -29,7 +29,7 @@ class Restraunt {
   private routes(): void {
     this.express.get('', this.getRestaurant);
     this.express.get('/:id', this.getRestaurantOne);
-    this.express.get('/:id/count', this.updateRestaurantCount);
+    this.express.post('/:id/count', this.updateRestaurantCount);
   }
   getRestaurant = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {
@@ -61,6 +61,7 @@ class Restraunt {
       const { id, postdate } = req.body;
 
       const get_res = await this.RestaurantService.getRestaurantViewsCount(id, postdate);
+      console.log(get_res)
       if (!get_res) {
         await this.RestaurantService.insertRestaurantViewsCount(id, postdate)
       } else {

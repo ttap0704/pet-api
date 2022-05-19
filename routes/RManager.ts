@@ -34,6 +34,9 @@ class Manager {
   }
 
   private routes(): void {
+    // 공통
+    this.express.get('/:manager/chart/views', this.getViewsChartData)
+
     // 숙박업소
     this.express.post('/:manager/accommodation', this.addManagerAccommodation);
     this.express.post('/:manager/accommodation/:id/address', this.updateManagerAccommodationAddress);
@@ -71,6 +74,29 @@ class Manager {
     this.express.patch('/:manager/restaurant/:id/:menu/:menu_id', this.patchManagerRestaurantMenu);
     this.express.delete('/:manager/restaurant/:id/:menu/:menu_id', this.deleteManagerRestaurantMenu);
   }
+
+  getViewsChartData = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    try {
+      const manager = Number(req.params.manager);
+      const { type, year, month } = req.query;
+
+      const cur_type = Number(type);
+
+      if (cur_type == 1) {
+        const get_res = await this.RestaurantService.getRestaurantViewsMonthCount(manager, `${year}-${month}`)
+        res.status(200).send({ test: get_res })
+        // 음식점
+      } else if (cur_type == 2) {
+        // 숙박업소
+      }
+
+
+    } catch (err) {
+      res.status(500).send();
+      throw new Error(err)
+    }
+  }
+
 
   addManagerAccommodation = async (req: express.Request, res: express.Response, next: express.NextFunction) => {
     try {

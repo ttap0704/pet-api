@@ -4,6 +4,8 @@ import {
   Category,
   GetManagerRestaurantListAttributes,
 } from '../interfaces/IRestaurant';
+import { QueryTypes } from 'sequelize';
+const Sequelize = require('sequelize');
 
 class RestaurantService {
   public async getRestaurantViewsCount(id: number, postdate: string) {
@@ -13,6 +15,21 @@ class RestaurantService {
         restaurant_id,
         postdate
       }
+    })
+
+    return res;
+  }
+
+  public async getRestaurantViewsMonthCount(manager: number, postdate: string) {
+
+    const res = await Model.sequelize.query(`SELECT a.* 
+    FROM 
+    restaurant_views_count a 
+    WHERE a.restaurant_id IN (SELECT id FROM restaurant WHRE manager = :manager)
+    AND DATE_FORMAT(a.postdate, '%Y-%m') = :postdate
+    `, {
+      replacements: { manager, postdate },
+      type: QueryTypes.SELECT
     })
 
     return res;
@@ -338,7 +355,7 @@ class RestaurantService {
     const manager = payload.manager;
     const page = payload.page;
     const menu = payload.menu;
-    const tempSQL = Model.sequelize.dialect.queryGenerator
+    const tmp_sql = Model.sequelize.dialect.queryGenerator
       .selectQuery('restaurant', {
         attributes: ['id'],
         where: {
@@ -358,7 +375,7 @@ class RestaurantService {
       count = await Model.ExposureMenu.count({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
           },
         },
       });
@@ -366,7 +383,7 @@ class RestaurantService {
       list = await Model.ExposureMenu.findAll({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
           },
         },
         include: [
@@ -399,7 +416,7 @@ class RestaurantService {
       count = await Model.EntireMenu.count({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
           },
         },
       });
@@ -433,7 +450,7 @@ class RestaurantService {
       list = await Model.EntireMenu.findAll({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
           },
         },
         attributes: attributes,
@@ -444,7 +461,7 @@ class RestaurantService {
       count = await Model.EntireMenuCategory.count({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
           },
         },
       });
@@ -467,7 +484,7 @@ class RestaurantService {
       list = await Model.EntireMenuCategory.findAll({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
           },
         },
         include: [
