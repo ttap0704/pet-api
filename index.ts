@@ -2,19 +2,17 @@ import * as http from 'http';
 import App from './app';
 import { Logger } from './logger/logger';
 import { AddressInfo } from 'net';
-// import dotenv from 'dotenv'
+import { sequelize } from './models';
 
 const port = 3080;
 const dotenv = require('dotenv');
 const fs = require('fs');
 
 dotenv.config();
-const { sequelize } = require('./models');
-import db from './models';
 
 App.set('port', port);
 const server = http.createServer(App);
-db.sequelize
+sequelize
     .sync({ force: false })
     .then(() => {
         console.log('Success DB Connection');

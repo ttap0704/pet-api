@@ -88,13 +88,13 @@ declare global {
     seq: number;
   }
 
-  interface RestaurantViewsCountType {
+  interface RestaurantViewsCountAttributes {
     restaurant_id: number;
     views: number;
     postdate: string;
   }
 
-  interface AccommodationViewsCountType {
+  interface AccommodationViewsCountAttributes {
     accommodation_id: number;
     views: number;
     postdate: string;
@@ -117,16 +117,16 @@ declare global {
     road_address: string;
   }
 
-  interface JoinCertificationType {
+  interface JoinCertificationAttributes {
     id: number;
     cert_num: string;
   }
 
-  interface JoinCertificationRowType extends JoinCertificationType {
+  interface JoinCertificationRowType extends JoinCertificationAttributes {
     manager: number
   }
 
-  interface BusinessType {
+  interface BusinessAttributes {
     id: number;
     b_nm: string
     b_no: string
@@ -261,15 +261,15 @@ declare global {
     Users: Model<UsersAttributes>,
     Accommodation: Model<AccommodationAttributes>
     AccommodationPeakSeason: Model<AccommodationPeakSeasonAttributes>,
-    AccommodationViewsCount: Model<AccommodationViewsCountType>,
-    Business: Model<BusinessType>,
+    AccommodationViewsCount: Model<AccommodationViewsCountAttributes>,
+    Business: Model<BusinessAttributes>,
     EntireMenu: Model<EntireMenuAttributes>,
     EntireMenuCategory: Model<EntireMenuCategoryAttributes>,
     ExposureMenu: Model<ExposureMenuAttributes>,
     Images: Model<ImagesAttributes>,
-    JoinCertification: Model<JoinCertificationType>,
+    JoinCertification: Model<JoinCertificationAttributes>,
     Restaurant: Model<RestaurantAttributes>,
-    RestaurantViewsCount: Model<RestaurantViewsCountType>,
+    RestaurantViewsCount: Model<RestaurantViewsCountAttributes>,
     Rooms: Model<RoomsAttributes>,
   }
 }

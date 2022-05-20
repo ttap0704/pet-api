@@ -1,6 +1,6 @@
 import Model from '../models';
 
-interface CreateBusinessType extends BusinessType {
+interface CreateBusinessAttributes extends BusinessAttributes {
   manager: number
 }
 
@@ -42,7 +42,7 @@ class UserService {
     return delete_res;
   }
 
-  async checkCertNum(payload: { cert_num: string, row: JoinCertificationType }) {
+  async checkCertNum(payload: { cert_num: string, row: JoinCertificationAttributes }) {
     const cert_num = payload.cert_num;
     const row = payload.row
     const validate = await Model.Users.prototype.validPassword(cert_num, row.cert_num);
@@ -50,7 +50,7 @@ class UserService {
     return validate
   }
 
-  async setBusinessInfo(payload: CreateBusinessType) {
+  async setBusinessInfo(payload: CreateBusinessAttributes) {
     const created_business = await Model.Business.create(payload);
 
     return created_business;

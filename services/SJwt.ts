@@ -1,4 +1,3 @@
-import Model from '../models';
 import * as jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
 

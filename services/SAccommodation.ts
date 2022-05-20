@@ -1,9 +1,17 @@
-import Model from '../models';
+import { Sequelize, sequelize } from '../models';
+import { Op } from 'sequelize'
 
 class AccommodationService {
+  public Model: Sequelize['models']
+
+  constructor() {
+    this.Model = sequelize.models;
+  }
+
   public async getAccommodationViewsCount(id: number, postdate: string) {
+
     const accommodation_id = id;
-    const res = await Model.AccommodationViewsCount.findOne({
+    const res = await this.Model.AccommodationViewsCount.findOne({
       where: {
         accommodation_id,
         postdate
@@ -15,7 +23,7 @@ class AccommodationService {
 
   public async insertAccommodationViewsCount(id: number, postdate: string) {
     const accommodation_id = id;
-    const insert_res = await Model.AccommodationViewsCount.create({
+    const insert_res = await this.Model.AccommodationViewsCount.create({
       accommodation_id,
       views: 1,
       postdate
@@ -27,8 +35,8 @@ class AccommodationService {
   public async increaseAccommodationViewsCount(id: number, postdate: string) {
     const accommodation_id = id;
 
-    const update_res = await Model.AccommodationViewsCount.update({
-      views: Model.Sequelize.literal('views + 1')
+    const update_res = await this.Model.AccommodationViewsCount.update({
+      views: sequelize.literal('views + 1')
     }, {
       where: {
         accommodation_id,
@@ -42,44 +50,43 @@ class AccommodationService {
   public async getAccommodationList(query: { types: string, location: string }) {
 
     const { types, location } = query
-
     const where: any = {}
     if (types) {
       where.type = {
-        [Model.Sequelize.Op.in]: types ? types.split(',') : [1, 2, 3, 4],
+        [Op.in]: types ? types.split(',') : [1, 2, 3, 4],
       }
     }
 
     if (location) {
-      where[Model.Sequelize.Op.or] = {
-        ...where[Model.Sequelize.Op.or],
+      where[Op.or] = {
+        ...where[Op.or],
         sido: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
         sigungu: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
         bname: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
         road_address: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
       }
     }
 
 
-    const list = await Model.Accommodation.findAll({
+    const list = await this.Model.Accommodation.findAll({
       include: [
         {
-          model: Model.Images,
+          model: this.Model.Images,
           as: 'accommodation_images',
-          require: true,
+          required: true,
           attributes: ['file_name'],
         },
       ],
       attributes: ['sido', 'sigungu', 'bname', 'label', 'id'],
-      order: [[{ model: Model.Images, as: 'accommodation_images' }, 'seq', 'ASC']],
+      order: [[{ model: this.Model.Images, as: 'accommodation_images' }, 'seq', 'ASC']],
       where: {
         ...where,
       }
@@ -93,17 +100,17 @@ class AccommodationService {
   public async getAccommodationOne(payload: { accommodation_id: number }) {
     const accommodation_id = payload.accommodation_id;
 
-    const accommodation = await Model.Accommodation.findOne({
+    const accommodation = await this.Model.Accommodation.findOne({
       include: [
         {
-          model: Model.Rooms,
+          model: this.Model.Rooms,
           as: 'accommodation_rooms',
-          require: true,
+          required: true,
           include: [
             {
-              model: Model.Images,
+              model: this.Model.Images,
               as: 'rooms_images',
-              require: true,
+              required: true,
             },
           ],
         },
@@ -132,7 +139,7 @@ class AccommodationService {
   public async addManagerAccommodationList(payload: AddAccommodationAttributes) {
     const data = payload.data;
     const manager = payload.manager;
-    const accommodation = await Model.Accommodation.create(
+    const accommodation = await this.Model.Accommodation.create(
       {
         bname: data.bname,
         building_name: data.building_name,
@@ -169,7 +176,7 @@ class AccommodationService {
       },
     );
 
-    const accommodation_id = accommodation.dataValues.id;
+    const accommodation_id = accommodation.getDataValue('id');
 
     const peak_season_data = [];
     for (const x of data.peak_season) {
@@ -179,7 +186,7 @@ class AccommodationService {
         accommodation_id: accommodation_id,
       })
     }
-    const peak_season = await Model.AccommodationPeakSeason.bulkCreate(peak_season_data);
+    const peak_season = await this.Model.AccommodationPeakSeason.bulkCreate(peak_season_data);
 
     const data_rooms = [];
     for (const x of data.rooms) {
@@ -188,7 +195,7 @@ class AccommodationService {
         accommodation_id: accommodation_id,
       });
     }
-    const rooms = await Model.Rooms.bulkCreate(data_rooms);
+    const rooms = await this.Model.Rooms.bulkCreate(data_rooms);
 
     return { accommodation_id, peak_season, rooms };
   }
@@ -196,7 +203,7 @@ class AccommodationService {
   public async getManagerAccommodationList(payload: { manager: number; page: number }) {
     const manager = payload.manager;
     const page = payload.page;
-    const count = await Model.Accommodation.count({
+    const count = await this.Model.Accommodation.count({
       where: {
         manager: manager,
       },
@@ -207,7 +214,7 @@ class AccommodationService {
       offset = 5 * (page - 1);
     }
 
-    const list = await Model.Accommodation.findAll({
+    const list = await this.Model.Accommodation.findAll({
       where: {
         manager: manager,
       },
@@ -243,7 +250,7 @@ class AccommodationService {
     const accommodation_id = payload.accommodation_id;
     const data = payload.data;
 
-    const tmp_rooms = await Model.Rooms.findAll({
+    const tmp_rooms = await this.Model.Rooms.findAll({
       where: {
         accommodation_id,
       },
@@ -264,7 +271,7 @@ class AccommodationService {
       seq++;
     }
 
-    const rooms = await Model.Rooms.bulkCreate(bulk_data);
+    const rooms = await this.Model.Rooms.bulkCreate(bulk_data);
     return rooms;
   }
 
@@ -286,18 +293,18 @@ class AccommodationService {
       })
       .slice(0, -1);
 
-    const count = await Model.Rooms.count({
+    const count = await this.Model.Rooms.count({
       where: {
         accommodation_id: {
-          [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+          [Op.in]: Model.sequelize.literal(`(${tempSQL})`),
         },
       },
     });
 
-    const list = await Model.Rooms.findAll({
+    const list = await this.Model.Rooms.findAll({
       where: {
         accommodation_id: {
-          [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tempSQL})`),
+          [Op.in]: Model.sequelize.literal(`(${tempSQL})`),
         },
       },
       include: [
@@ -348,7 +355,7 @@ class AccommodationService {
     const accommodation_id = payload.accommodation_id;
     const address = payload.address;
 
-    const code = await Model.Accommodation.update(
+    const code = await this.Model.Accommodation.update(
       { ...address },
       {
         where: {
@@ -368,7 +375,7 @@ class AccommodationService {
     const accommodation_id = payload.accommodation_id;
     const service_info = payload.service_info;
 
-    const code = await Model.Accommodation.update(
+    const code = await this.Model.Accommodation.update(
       { ...service_info },
       {
         where: {
@@ -388,7 +395,7 @@ class AccommodationService {
     const accommodation_id = payload.accommodation_id;
     const season = payload.season;
 
-    await Model.AccommodationPeakSeason.destroy(
+    await this.Model.AccommodationPeakSeason.destroy(
       {
         where: {
           accommodation_id: accommodation_id,
@@ -402,7 +409,7 @@ class AccommodationService {
         accommodation_id
       }
     })
-    const new_season = await Model.AccommodationPeakSeason.bulkCreate(season_data);
+    const new_season = await this.Model.AccommodationPeakSeason.bulkCreate(season_data);
 
     if (new_season.length >= 0) {
       return new_season;
@@ -416,7 +423,7 @@ class AccommodationService {
     const target = payload.target;
     const value = payload.value;
 
-    const code = await Model.Accommodation.update(
+    const code = await this.Model.Accommodation.update(
       { [target]: value },
       {
         where: {
@@ -444,7 +451,7 @@ class AccommodationService {
 
     console.log(rooms_id, target, value, 'editManagerAccommodationRoom');
 
-    const code = await Model.Rooms.update(
+    const code = await this.Model.Rooms.update(
       { [target]: value },
       {
         where: {
@@ -463,13 +470,13 @@ class AccommodationService {
   async deleteManagerAccommodationList(payload: { accommodation_id: number }) {
     const accommodation_id = payload.accommodation_id;
 
-    const code1 = await Model.Accommodation.destroy({
+    const code1 = await this.Model.Accommodation.destroy({
       where: {
         id: accommodation_id,
       },
     });
 
-    const code2 = await Model.Rooms.destroy({
+    const code2 = await this.Model.Rooms.destroy({
       where: {
         accommodation_id: accommodation_id,
       },
@@ -485,7 +492,7 @@ class AccommodationService {
   async deleteManagerAccommodationRoomList(payload: { accommodation_id: number; rooms_id: number }) {
     const rooms_id = payload.rooms_id;
 
-    const code = await Model.Rooms.destroy({
+    const code = await this.Model.Rooms.destroy({
       where: {
         id: rooms_id,
       },
@@ -505,7 +512,7 @@ class AccommodationService {
 
     const f_res = [];
     for (const x of data) {
-      const res = await Model.Rooms.update({ seq: x.seq }, { where: { id: x.id, accommodation_id } });
+      const res = await this.Model.Rooms.update({ seq: x.seq }, { where: { id: x.id, accommodation_id } });
 
       if (res) {
         f_res.push(res);
@@ -523,7 +530,7 @@ class AccommodationService {
     const rooms_id = payload.rooms_id
     const data = payload.data;
 
-    const code = await Model.Rooms.update({ ...data }, { where: { id: rooms_id, accommodation_id } });
+    const code = await this.Model.Rooms.update({ ...data }, { where: { id: rooms_id, accommodation_id } });
 
     if (code >= 0) {
       return true;

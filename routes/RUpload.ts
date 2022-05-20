@@ -1,7 +1,6 @@
 import * as express from 'express';
 import { Logger } from '../logger/logger';
 
-import Model from '../models';
 import UploadService from '../services/SUpload';
 
 const path = require('path');

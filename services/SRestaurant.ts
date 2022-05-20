@@ -1,16 +1,21 @@
-import Model from '../models';
 import {
   AddRestaurantAttributes,
   Category,
   GetManagerRestaurantListAttributes,
 } from '../interfaces/IRestaurant';
-import { QueryTypes } from 'sequelize';
-const Sequelize = require('sequelize');
+import { QueryTypes, Sequelize, Op } from 'sequelize';
+import { sequelize } from '../models';
 
 class RestaurantService {
+  public Models: Sequelize['models'];
+
+  constructor() {
+    this.Models = sequelize['models']
+  }
+
   public async getRestaurantViewsCount(id: number, postdate: string) {
     const restaurant_id = id;
-    const res = await Model.RestaurantViewsCount.findOne({
+    const res = await this.Models.RestaurantViewsCount.findOne({
       where: {
         restaurant_id,
         postdate
@@ -21,23 +26,24 @@ class RestaurantService {
   }
 
   public async getRestaurantViewsMonthCount(manager: number, postdate: string) {
+    // this.Models.
 
-    const res = await Model.sequelize.query(`SELECT a.* 
-    FROM 
-    restaurant_views_count a 
-    WHERE a.restaurant_id IN (SELECT id FROM restaurant WHRE manager = :manager)
-    AND DATE_FORMAT(a.postdate, '%Y-%m') = :postdate
-    `, {
-      replacements: { manager, postdate },
-      type: QueryTypes.SELECT
-    })
+    // const res = await this.Models.sequelize.query(`SELECT a.* 
+    // FROM 
+    // restaurant_views_count a 
+    // WHERE a.restaurant_id IN (SELECT id FROM restaurant WHRE manager = :manager)
+    // AND DATE_FORMAT(a.postdate, '%Y-%m') = :postdate
+    // `, {
+    //   replacements: { manager, postdate },
+    //   type: QueryTypes.SELECT
+    // })
 
-    return res;
+    return true;
   }
 
   public async insertRestaurantViewsCount(id: number, postdate: string) {
     const restaurant_id = id;
-    const insert_res = await Model.RestaurantViewsCount.create({
+    const insert_res = await this.Models.RestaurantViewsCount.create({
       restaurant_id,
       views: 1,
       postdate
@@ -49,8 +55,8 @@ class RestaurantService {
   public async increaseRestaurantViewsCount(id: number, postdate: string) {
     const restaurant_id = id;
 
-    const update_res = await Model.RestaurantViewsCount.update({
-      views: Model.Sequelize.literal('views + 1')
+    const update_res = await this.Models.RestaurantViewsCount.update({
+      views: sequelize.literal('views + 1')
     }, {
       where: {
         restaurant_id,
@@ -67,59 +73,59 @@ class RestaurantService {
     const where: any = {}
     if (types) {
       where.type = {
-        [Model.Sequelize.Op.in]: types ? types.split(',') : [1, 2, 3, 4],
+        [Op.in]: types ? types.split(',') : [1, 2, 3, 4],
       }
     }
 
     if (location) {
-      where[Model.Sequelize.Op.or] = {
-        ...where[Model.Sequelize.Op.or],
+      where[Op.or] = {
+        ...where[Op.or],
         sido: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
         sigungu: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
         bname: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
         road_address: {
-          [Model.Sequelize.Op.like]: `%${location}%`
+          [Op.like]: `%${location}%`
         },
       }
     }
 
 
-    const list = await Model.Restaurant.findAll({
+    const list = await this.Models.Restaurant.findAll({
       include: [
         {
-          model: Model.Images,
+          model: this.Models.Images,
           as: 'restaurant_images',
-          require: true,
+          required: true,
         },
         {
-          model: Model.ExposureMenu,
+          model: this.Models.ExposureMenu,
           as: 'exposure_menu',
-          require: true,
+          required: true,
           attributes: ['label'],
         },
         {
-          model: Model.EntireMenuCategory,
+          model: this.Models.EntireMenuCategory,
           as: 'entire_menu_category',
-          require: true,
+          required: true,
           attributes: ['category'],
           include: [
             {
-              model: Model.EntireMenu,
+              model: this.Models.EntireMenu,
               as: 'menu',
-              require: true,
+              required: true,
               attributes: ['label'],
             },
           ],
         },
       ],
       attributes: ['sido', 'sigungu', 'bname', 'label', 'id',],
-      order: [[{ model: Model.Images, as: 'restaurant_images' }, 'seq', 'ASC']],
+      order: [[{ model: this.Models.Images, as: 'restaurant_images' }, 'seq', 'ASC']],
       where: {
         ...where,
       }
@@ -131,48 +137,48 @@ class RestaurantService {
   public async getRestaurantOne(payload: { restaurant_id: number }) {
     const restaurant_id = payload.restaurant_id;
 
-    const restaurant = await Model.Restaurant.findOne({
+    const restaurant = await this.Models.Restaurant.findOne({
       include: [
         {
-          model: Model.ExposureMenu,
+          model: this.Models.ExposureMenu,
           as: 'exposure_menu',
-          require: true,
+          required: true,
           include: [
             {
-              model: Model.Images,
+              model: this.Models.Images,
               as: 'exposure_menu_image',
-              require: true,
+              required: true,
             },
           ],
         },
         {
-          model: Model.EntireMenuCategory,
+          model: this.Models.EntireMenuCategory,
           as: 'entire_menu_category',
-          require: true,
+          required: true,
           include: [
             {
-              model: Model.EntireMenu,
+              model: this.Models.EntireMenu,
               as: 'menu',
-              require: true,
+              required: true,
             },
           ],
         },
         {
-          model: Model.Images,
+          model: this.Models.Images,
           as: 'restaurant_images',
-          require: true,
+          required: true,
         },
       ],
       order: [
-        [{ model: Model.Images, as: 'restaurant_images' }, 'seq', 'ASC'],
-        [{ model: Model.EntireMenuCategory, as: 'entire_menu_category' }, 'seq', 'ASC'],
+        [{ model: this.Models.Images, as: 'restaurant_images' }, 'seq', 'ASC'],
+        [{ model: this.Models.EntireMenuCategory, as: 'entire_menu_category' }, 'seq', 'ASC'],
         [
-          { model: Model.EntireMenuCategory, as: 'entire_menu_category' },
-          { model: Model.EntireMenu, as: 'menu' },
+          { model: this.Models.EntireMenuCategory, as: 'entire_menu_category' },
+          { model: this.Models.EntireMenu, as: 'menu' },
           'seq',
           'ASC',
         ],
-        [{ model: Model.ExposureMenu, as: 'exposure_menu' }, 'seq', 'ASC'],
+        [{ model: this.Models.ExposureMenu, as: 'exposure_menu' }, 'seq', 'ASC'],
       ],
       where: { id: restaurant_id },
     });
@@ -184,7 +190,7 @@ class RestaurantService {
     // this.logger.info("url:::::::" + req.url);
     const manager = payload.manager;
     const data = payload.data;
-    const restaurant = await Model.Restaurant.create(
+    const restaurant = await this.Models.Restaurant.create(
       {
         bname: data.bname,
         building_name: data.building_name,
@@ -227,7 +233,7 @@ class RestaurantService {
       },
     );
 
-    const restaurant_id = restaurant.dataValues.id;
+    const restaurant_id = restaurant.getDataValue('id');
 
     const category: { category: string; seq: number; restaurant_id: number }[] = [];
     for (let i = 0, leng = data.entireMenu.length; i < leng; i++) {
@@ -240,13 +246,13 @@ class RestaurantService {
 
     const entire_menu_category_arr: Category[] = [];
     for (const x of category) {
-      const entire_menu_category = await Model.EntireMenuCategory.findOrCreate({
+      const entire_menu_category = await this.Models.EntireMenuCategory.findOrCreate({
         where: { category: x.category, restaurant_id: restaurant_id, seq: x.seq },
       });
       entire_menu_category_arr.push({
-        id: entire_menu_category[0].dataValues.id,
-        category: entire_menu_category[0].dataValues.category,
-        seq: entire_menu_category[0].dataValues.seq,
+        id: entire_menu_category[0].getDataValue('id'),
+        category: entire_menu_category[0].getDataValue('category'),
+        seq: entire_menu_category[0].getDataValue('seq'),
         restaurant_id: restaurant_id,
       });
     }
@@ -279,11 +285,11 @@ class RestaurantService {
       });
     }
 
-    const entire_menu = await Model.EntireMenu.bulkCreate(entire_menu_bulk, {
+    const entire_menu = await this.Models.EntireMenu.bulkCreate(entire_menu_bulk, {
       individualHooks: true,
       fields: ['label', 'price', 'category_id', 'restaurant_id', 'seq'],
     });
-    const exposure_menu = await Model.ExposureMenu.bulkCreate(exposure_menu_bulk, {
+    const exposure_menu = await this.Models.ExposureMenu.bulkCreate(exposure_menu_bulk, {
       individualHooks: true,
       fields: ['label', 'price', 'comment', 'restaurant_id', 'seq'],
     });
@@ -301,7 +307,7 @@ class RestaurantService {
     const manager = payload.manager;
     const page = payload.page;
 
-    const count = await Model.Restaurant.count({
+    const count = await this.Models.Restaurant.count({
       where: {
         manager: manager,
       },
@@ -312,37 +318,37 @@ class RestaurantService {
       offset = 5 * (page - 1);
     }
 
-    const list = await Model.Restaurant.findAll({
+    const list = await this.Models.Restaurant.findAll({
       where: {
         manager: manager,
       },
       include: [
         {
-          model: Model.ExposureMenu,
+          model: this.Models.ExposureMenu,
           as: 'exposure_menu',
-          require: true,
+          required: true,
         },
         {
-          model: Model.EntireMenu,
+          model: this.Models.EntireMenu,
           as: 'entire_menu',
-          require: true,
+          required: true,
         },
         {
-          model: Model.EntireMenuCategory,
+          model: this.Models.EntireMenuCategory,
           as: 'entire_menu_category',
-          require: true,
+          required: true,
         },
         {
-          model: Model.Images,
+          model: this.Models.Images,
           as: 'restaurant_images',
           attributes: ['seq', 'id', 'file_name', 'category', 'restaurant_id'],
         },
       ],
       order: [
-        [{ model: Model.ExposureMenu, as: 'exposure_menu' }, 'seq', 'ASC'],
-        [{ model: Model.EntireMenu, as: 'entire_menu' }, 'seq', 'ASC'],
-        [{ model: Model.EntireMenuCategory, as: 'entire_menu_category' }, 'seq', 'ASC'],
-        [{ model: Model.Images, as: 'restaurant_images' }, 'seq', 'ASC']
+        [{ model: this.Models.ExposureMenu, as: 'exposure_menu' }, 'seq', 'ASC'],
+        [{ model: this.Models.EntireMenu, as: 'entire_menu' }, 'seq', 'ASC'],
+        [{ model: this.Models.EntireMenuCategory, as: 'entire_menu_category' }, 'seq', 'ASC'],
+        [{ model: this.Models.Images, as: 'restaurant_images' }, 'seq', 'ASC']
       ],
       offset: offset,
       limit: 5,
@@ -355,7 +361,7 @@ class RestaurantService {
     const manager = payload.manager;
     const page = payload.page;
     const menu = payload.menu;
-    const tmp_sql = Model.sequelize.dialect.queryGenerator
+    const tmp_sql = sequelize.dialect.queryGenerator
       .selectQuery('restaurant', {
         attributes: ['id'],
         where: {
@@ -372,25 +378,25 @@ class RestaurantService {
     let list;
     let count;
     if (menu == 'exposure_menu') {
-      count = await Model.ExposureMenu.count({
+      count = await this.Models.ExposureMenu.count({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
+            [Op.in]: sequelize.literal(`(${tmp_sql})`),
           },
         },
       });
 
-      list = await Model.ExposureMenu.findAll({
+      list = await this.Models.ExposureMenu.findAll({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
+            [Op.in]: sequelize.literal(`(${tmp_sql})`),
           },
         },
         include: [
           {
-            model: Model.Images,
+            model: this.Models.Images,
             as: 'exposure_menu_image',
-            require: true,
+            required: true,
           },
         ],
         attributes: [
@@ -400,7 +406,7 @@ class RestaurantService {
           'restaurant_id',
           'comment',
           [
-            Model.sequelize.literal(`(
+            sequelize.literal(`(
             SELECT label
             FROM restaurant
             WHERE
@@ -413,10 +419,10 @@ class RestaurantService {
         limit: 5,
       });
     } else if (menu == 'entire_menu') {
-      count = await Model.EntireMenu.count({
+      count = await this.Models.EntireMenu.count({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
+            [Op.in]: sequelize.literal(`(${tmp_sql})`),
           },
         },
       });
@@ -428,7 +434,7 @@ class RestaurantService {
         'restaurant_id',
         'category_id',
         [
-          Model.sequelize.literal(`(
+          sequelize.literal(`(
           SELECT category
           FROM entire_menu_category
           WHERE
@@ -437,7 +443,7 @@ class RestaurantService {
           'category',
         ],
         [
-          Model.sequelize.literal(`(
+          sequelize.literal(`(
           SELECT label
           FROM restaurant
           WHERE
@@ -447,21 +453,21 @@ class RestaurantService {
         ],
       ];
 
-      list = await Model.EntireMenu.findAll({
+      list = await this.Models.EntireMenu.findAll({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
+            [Op.in]: sequelize.literal(`(${tmp_sql})`),
           },
         },
-        attributes: attributes,
+        attributes,
         offset: offset,
         limit: 5,
       });
     } else if (menu == 'category') {
-      count = await Model.EntireMenuCategory.count({
+      count = await this.Models.EntireMenuCategory.count({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
+            [Op.in]: sequelize.literal(`(${tmp_sql})`),
           },
         },
       });
@@ -471,7 +477,7 @@ class RestaurantService {
         'restaurant_id',
         'category',
         [
-          Model.sequelize.literal(`(
+          sequelize.literal(`(
           SELECT label
           FROM restaurant
           WHERE
@@ -481,20 +487,20 @@ class RestaurantService {
         ],
       ];
 
-      list = await Model.EntireMenuCategory.findAll({
+      list = await this.Models.EntireMenuCategory.findAll({
         where: {
           restaurant_id: {
-            [Model.Sequelize.Op.in]: Model.sequelize.literal(`(${tmp_sql})`),
+            [Op.in]: sequelize.literal(`(${tmp_sql})`),
           },
         },
         include: [
           {
-            model: Model.EntireMenu,
+            model: this.Models.EntireMenu,
             as: 'menu',
-            require: true,
+            required: true,
           },
         ],
-        order: [[{ model: Model.EntireMenu, as: 'menu' }, 'seq', 'ASC']],
+        order: [[{ model: this.Models.EntireMenu, as: 'menu' }, 'seq', 'ASC']],
         offset: offset,
         attributes,
         limit: 5,
@@ -506,18 +512,18 @@ class RestaurantService {
 
   public async getManagerRestaurantCategoryList(payload: { restaurant_id: number }) {
     const restaurant_id = payload.restaurant_id;
-    const category = await Model.EntireMenuCategory.findAll({
+    const category = await this.Models.EntireMenuCategory.findAll({
       where: {
         restaurant_id: restaurant_id,
       },
       include: [
         {
-          model: Model.EntireMenu,
+          model: this.Models.EntireMenu,
           as: 'menu',
-          require: true,
+          required: true,
         },
       ],
-      order: [[{ model: Model.EntireMenu, as: 'menu' }, 'seq', 'ASC']],
+      order: [[{ model: this.Models.EntireMenu, as: 'menu' }, 'seq', 'ASC']],
     });
 
     return category;
@@ -527,7 +533,7 @@ class RestaurantService {
     const restaurant_id = payload.restaurant_id;
     const category = payload.category;
 
-    const tmp_category = await Model.EntireMenuCategory.findAll({
+    const tmp_category = await this.Models.EntireMenuCategory.findAll({
       where: {
         restaurant_id,
       },
@@ -535,7 +541,7 @@ class RestaurantService {
       limit: 1,
     });
 
-    let seq = tmp_category[0] ? Number(tmp_category[0].dataValues.seq) : 0;
+    let seq = tmp_category[0] ? Number(tmp_category[0].getDataValue('seq) : 0');
     const data = category.map((item) => {
       seq++;
       return {
@@ -545,7 +551,7 @@ class RestaurantService {
       }
     });
 
-    const res_category = await Model.EntireMenuCategory.bulkCreate(data);
+    const res_category = await this.Models.EntireMenuCategory.bulkCreate(data);
 
     return res_category;
   }
@@ -555,7 +561,7 @@ class RestaurantService {
     const target = payload.target;
     const value = payload.value;
 
-    const code = await Model.EntireMenuCategory.update(
+    const code = await this.Models.EntireMenuCategory.update(
       { [target]: value },
       {
         where: {
@@ -574,13 +580,13 @@ class RestaurantService {
   public async deleteManagerRestauranCateogrytList(payload: { category_id: number }) {
     const category_id = payload.category_id;
 
-    const code1 = await Model.EntireMenu.destroy({
+    const code1 = await this.Models.EntireMenu.destroy({
       where: {
         category_id,
       },
     });
 
-    const code2 = await Model.EntireMenuCategory.destroy({
+    const code2 = await this.Models.EntireMenuCategory.destroy({
       where: {
         id: category_id,
       },
@@ -598,7 +604,7 @@ class RestaurantService {
     const category_id = payload.category_id;
     const menu = payload.menu;
 
-    const tmp_category = await Model.EntireMenu.findAll({
+    const tmp_category = await this.Models.EntireMenu.findAll({
       where: {
         restaurant_id,
         category_id,
@@ -607,7 +613,7 @@ class RestaurantService {
       limit: 1,
     });
 
-    let seq = tmp_category[0] ? Number(tmp_category[0].dataValues.seq) : 0;
+    let seq = tmp_category[0] ? Number(tmp_category[0].getDataValue('seq) : 0');
 
     const data = menu.map((item) => {
       seq++;
@@ -620,7 +626,7 @@ class RestaurantService {
       }
     });
 
-    const menus = await Model.EntireMenu.bulkCreate(data, {
+    const menus = await this.Models.EntireMenu.bulkCreate(data, {
       fields: ['label', 'price', 'category_id', 'restaurant_id', 'seq'],
     });
 
@@ -630,7 +636,7 @@ class RestaurantService {
   public async deleteManagerRestaurantCategoryMenuList(payload: { category_id: number }) {
     const category_id = payload.category_id;
 
-    const code = await Model.EntireMenu.destroy({
+    const code = await this.Models.EntireMenu.destroy({
       where: {
         category_id,
       },
@@ -648,7 +654,7 @@ class RestaurantService {
     const menu = payload.menu;
     const body = payload.data;
     if (menu == 'exposure_menu') {
-      const tmp_category = await Model.ExposureMenu.findAll({
+      const tmp_category = await this.Models.ExposureMenu.findAll({
         where: {
           restaurant_id,
         },
@@ -656,7 +662,7 @@ class RestaurantService {
         limit: 1,
       });
 
-      let seq = Number(tmp_category[0].dataValues.seq);
+      let seq = Number(tmp_category[0].getDataValue('seq)');
       const data = body.map((item) => {
         seq++;
         return {
@@ -668,13 +674,13 @@ class RestaurantService {
         }
       });
 
-      const res_menu = await Model.ExposureMenu.bulkCreate(data, {
+      const res_menu = await this.Models.ExposureMenu.bulkCreate(data, {
         fields: ['label', 'price', 'comment', 'restaurant_id', 'id', 'seq'],
       });
 
       return res_menu;
     } else if (menu == 'entire_menu') {
-      const tmp_category = await Model.EntireMenu.findAll({
+      const tmp_category = await this.Models.EntireMenu.findAll({
         where: {
           restaurant_id,
         },
@@ -682,7 +688,7 @@ class RestaurantService {
         limit: 1,
       });
 
-      let seq = Number(tmp_category[0].dataValues.seq);
+      let seq = Number(tmp_category[0].getDataValue('seq)');
       const data = body.map((item) => {
         seq++;
         return {
@@ -694,7 +700,7 @@ class RestaurantService {
         }
       });
 
-      const res_menu = await Model.ExposureMenu.bulkCreate(data, {
+      const res_menu = await this.Models.ExposureMenu.bulkCreate(data, {
         fields: ['label', 'price', 'comment', 'restaurant_id', 'id', 'seq'],
       });
 
@@ -706,7 +712,7 @@ class RestaurantService {
     const restaurant_id = payload.restaurant_id;
     const address = payload.address;
 
-    const code = await Model.Restaurant.update(
+    const code = await this.Models.Restaurant.update(
       { ...address },
       {
         where: {
@@ -726,7 +732,7 @@ class RestaurantService {
     const restaurant_id = payload.restaurant_id;
     const service_info = payload.service_info;
 
-    const code = await Model.Restaurant.update(
+    const code = await this.Models.Restaurant.update(
       { ...service_info },
       {
         where: {
@@ -747,7 +753,7 @@ class RestaurantService {
     const target = payload.target;
     const value = payload.value;
 
-    const code = await Model.Restaurant.update(
+    const code = await this.Models.Restaurant.update(
       { [target]: value },
       {
         where: {
@@ -771,11 +777,11 @@ class RestaurantService {
     for (const x of data) {
       let res = null;
       if (menu == 'exposure_menu') {
-        res = await Model.ExposureMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
+        res = await this.Models.ExposureMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
       } else if (menu == 'category') {
-        res = await Model.EntireMenuCategory.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
+        res = await this.Models.EntireMenuCategory.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
       } else if (menu == 'entire_menu') {
-        res = await Model.EntireMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
+        res = await this.Models.EntireMenu.update({ seq: x.seq }, { where: { id: x.id, restaurant_id } });
       }
 
       if (res) {
@@ -808,7 +814,7 @@ class RestaurantService {
       target_model = 'EntireMenu';
     }
 
-    const code = await Model[target_model].update(
+    const code = await this.Models[target_model].update(
       { [target]: value },
       {
         where: {
@@ -829,19 +835,19 @@ class RestaurantService {
     const restaurant_id = payload.restaurant_id;
     console.log(restaurant_id)
 
-    const code1 = await Model.EntireMenu.destroy({
+    const code1 = await this.Models.EntireMenu.destroy({
       where: {
         restaurant_id,
       },
     });
 
-    const code2 = await Model.ExposureMenu.destroy({
+    const code2 = await this.Models.ExposureMenu.destroy({
       where: {
         restaurant_id,
       },
     });
 
-    const code3 = await Model.Restaurant.destroy({
+    const code3 = await this.Models.Restaurant.destroy({
       where: {
         id: restaurant_id,
       },
@@ -866,7 +872,7 @@ class RestaurantService {
       target_model = 'EntireMenu';
     }
 
-    const code = await Model[target_model].destroy({
+    const code = await this.Models[target_model].destroy({
       where: {
         restaurant_id,
         id: menu_id,

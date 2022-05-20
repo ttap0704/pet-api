@@ -1,7 +1,6 @@
 import * as express from 'express';
 import { Model as ModelType, Sequelize } from 'sequelize/types';
 import { Logger } from '../logger/logger';
-import Model from '../models';
 
 class Default {
   public express: express.Application;
@@ -13,7 +12,6 @@ class Default {
 
   constructor() {
     this.express = express();
-    this.model = Model;
     this.middleware();
     this.routes();
     this.data = {};
@@ -21,9 +19,9 @@ class Default {
   }
 
   // Configure Express middleware.
-  private middleware(): void {}
+  private middleware(): void { }
 
-  private routes(): void {}
+  private routes(): void { }
 }
 
 export default Default;

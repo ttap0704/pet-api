@@ -1,12 +1,13 @@
 import * as express from 'express';
 import { Logger } from '../logger/logger';
-import Model from '../models';
 import UserService from '../services/SUser';
 import JwtService from '../services/SJwt';
 import EmailService from '../services/SEmail'
 import { generateRandom } from '../src/utils/tools'
 import { getCertificationContents } from '../src/utils/email_tools'
 import { ACCOMMODATION_BUSINESS_CODE_LIST, RESTAURANT_BUSINESS_CODE_LIST } from '../constant'
+import { Sequelize } from 'sequelize/types';
+import { sequelize } from '../models';
 
 const fetch = require('node-fetch');
 
@@ -15,6 +16,7 @@ class User {
   public logger: Logger;
 
   public data: object;
+  public Models: Sequelize['models'];
   public UserService: UserService;
   public JwtService: JwtService;
   public EmailService: EmailService;
@@ -23,6 +25,7 @@ class User {
     this.express = express();
     this.middleware();
     this.routes();
+    this.Models = sequelize.models;
     this.data = {};
     this.logger = new Logger();
     this.UserService = new UserService();
@@ -50,7 +53,7 @@ class User {
 
       const user: UsersAttributes = await this.UserService.findUser(req.body);
 
-      const validate = await Model.Users.prototype.validPassword(password, user.password);
+      const validate = await this.Models.Users.prototype.validPassword(password, user.password);
 
       let pass = true;
       let message = '';

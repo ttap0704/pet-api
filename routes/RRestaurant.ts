@@ -1,9 +1,5 @@
 import * as express from 'express';
 import { Logger } from '../logger/logger';
-import Model from '../models';
-
-import { RESTAURANT } from '../constant';
-import { Category } from '../interfaces/IRestaurant';
 import RestaurantService from '../services/SRestaurant';
 
 class Restraunt {
